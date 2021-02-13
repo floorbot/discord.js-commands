@@ -1,0 +1,19 @@
+{
+    "name": "discord.js-commands",
+    "version": "1.0.0",
+    "description": "A small library for discord.js to add command uniformity with interactions",
+    "main": "src/index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/floorbot-js/discord.js-commands.git"
+    },
+    "author": "Arcadeena",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/floorbot-js/discord.js-commands/issues"
+    },
+    "homepage": "https://github.com/floorbot-js/discord.js-commands#readme"
+}
