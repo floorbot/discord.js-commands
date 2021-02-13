@@ -1,9 +1,10 @@
 const exitHook = require('async-exit-hook');
 
 module.exports = class Tracker {
-    constructor(client, options) {
+    constructor(client, options = {}) {
         this.client = client;
         this.safeClose = options.safeClose ?? false;
+        this.name = options.name || this.constructor.name;
         this.client.on('shardReady', (id, unavailableGuilds) => this.initialize())
         this.client.on('shardResume', (id, replayedEvents) => this.initialize())
         this.client.on('shardError', (error, shardID) => this.finalize());

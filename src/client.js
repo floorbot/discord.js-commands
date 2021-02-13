@@ -2,7 +2,7 @@ module.exports = (Client) => class extends Client {
     constructor(options) {
         super(options);
         this.commands = {};
-        this.trackers = [];
+        this.trackers = {};
         this.on('interactionCreate', (interaction) => {
             const command = this.commands?. [interaction.commandName];
             if (command) {
@@ -27,9 +27,9 @@ module.exports = (Client) => class extends Client {
         return this;
     }
 
-    registerTracker(trackers) {
+    registerTracker(commands) {
         [trackers].flat().forEach(tracker => {
-            this.trackers.push(tracker);
+            this.trackers[tracker.name] = tracker;
         });
         return this;
     }
