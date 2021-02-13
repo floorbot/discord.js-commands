@@ -15,5 +15,8 @@
     "bugs": {
         "url": "https://github.com/floorbot-js/discord.js-commands/issues"
     },
-    "homepage": "https://github.com/floorbot-js/discord.js-commands#readme"
+    "homepage": "https://github.com/floorbot-js/discord.js-commands#readme",
+    "dependencies": {
+        "async-exit-hook": "^2.0.1"
+    }
 }
