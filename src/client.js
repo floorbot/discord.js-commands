@@ -27,7 +27,7 @@ module.exports = (Client) => class extends Client {
         return this;
     }
 
-    registerTracker(commands) {
+    registerTracker(trackers) {
         [trackers].flat().forEach(tracker => {
             this.trackers[tracker.name] = tracker;
         });
