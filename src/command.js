@@ -19,6 +19,7 @@ module.exports = class Command {
             401: (interaction, options) => this.getEmbedTemplate(interaction, { description: `Sorry! You do not have permission for this command 😑` }),
             403: (interaction, options) => this.getEmbedTemplate(interaction, { description: `Sorry! This is not the appropriate place for that content 😏` }),
             404: (interaction, options) => this.getEmbedTemplate(interaction, { description: `Sorry! I could not find what you were looking for 😟` }),
+            405: (interaction, options) => this.getEmbedTemplate(interaction, { description: `Sorry! I am not allowed to do that 🙃` }),
             406: (interaction, options) => this.getEmbedTemplate(interaction, { description: `Sorry! I do not have permission or access to view to this channel 🥺\n*This was sent via webhook as a direct responses to the request*` }),
             409: (interaction, options) => this.getEmbedTemplate(interaction, { description: `Sorry! This command is only usable inside a guild 😒` }),
             418: (interaction, options) => this.getEmbedTemplate(interaction, { description: `Sorry! I'm a teapot 😅` }),
