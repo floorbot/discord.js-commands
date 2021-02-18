@@ -1,8 +1,19 @@
 module.exports = (Client) => class extends Client {
     constructor(options) {
         super(options);
+        Object.assign({
+            commands: {},
+            trackers: {}
+        }, options);
+
+        // Initialise the trackers
+        this.trackers = Object.keys(options.trackers).reduce((trackers, key) => {
+            const trackerOptions = options.trackers[key].options ?? {};
+            const trackerClass = options.trackers[key].class;
+            trackers[key] = new trackerClass(this, trackerOptions)
+        }, {});
+
         this.commands = {};
-        this.trackers = {};
         this.on('interactionCreate', (interaction) => {
             const command = this.commands?. [interaction.commandName];
             if (command) {
@@ -23,13 +34,6 @@ module.exports = (Client) => class extends Client {
         [commands].flat().forEach(command => {
             this.commands[command.json.name] = command;
             if (post) this.interactionClient.createCommand(command.json).catch(console.error);
-        });
-        return this;
-    }
-
-    registerTracker(trackers) {
-        [trackers].flat().forEach(tracker => {
-            this.trackers[tracker.name] = tracker;
         });
         return this;
     }
