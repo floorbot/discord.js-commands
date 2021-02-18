@@ -10,7 +10,8 @@ module.exports = (Client) => class extends Client {
         this.trackers = Object.keys(options.trackers).reduce((trackers, key) => {
             const trackerOptions = options.trackers[key].options ?? {};
             const trackerClass = options.trackers[key].class;
-            trackers[key] = new trackerClass(this, trackerOptions)
+            trackers[key] = new trackerClass(this, trackerOptions);
+            return trackers;
         }, {});
 
         this.commands = {};
