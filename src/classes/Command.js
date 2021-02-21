@@ -25,7 +25,7 @@ module.exports = class Command {
             415: (interaction, options) => interaction.reply({ embed: this.getEmbedTemplate(interaction, { description: `Sorry! I do not have permission or access to view to this channel 🥺\n*This was sent via webhook as a direct responses to the request*` }), hideSource: true }),
             418: (interaction, options) => interaction.reply({ embed: this.getEmbedTemplate(interaction, { description: `Sorry! I'm a teapot! 😅${options.message ? `\n*${options.message}*` : ''}` }), hideSource: true }),
             426: (interaction, options) => interaction.reply({ embed: this.getEmbedTemplate(interaction, { description: `Sorry! I do not have permission to send messages in this channel 🥺\n*This was sent via webhook as a direct responses to the request*` }), hideSource: true }),
-            500: (interaction, options) => interaction.reply({ embed: this.getEmbedTemplate(interaction, { description: `Sorry! I seem to have run into an issue 😵` }), hideSource: true }),
+            500: (interaction, options) => interaction.channel.send({ embed: this.getEmbedTemplate(interaction, { description: `Sorry! I seem to have run into an issue 😵` }), hideSource: true }),
             501: (interaction, options) => interaction.reply({ embed: this.getEmbedTemplate(interaction, { description: `Sorry! I'm not sure how to handle this command 😥` }), hideSource: true }),
             504: (interaction, options) => interaction.reply({ embed: this.getEmbedTemplate(interaction, { description: `Sorry! The request took too long to respond 😭` }), hideSource: true })
         }, options.responses || {});
@@ -41,10 +41,11 @@ module.exports = class Command {
                     },
                     apply(target, thisArg, argsArray) {
                         return target.apply(thisArg, argsArray).then(res => {
-                            console.log(`[${thisCommaand.name}] Success:`, code, keyCode);
+                            client.emit('commandExecuted', thisCommaand, argsArray[0], code, keyCode);
+                            // console.log(`[${thisCommaand.name}] Success:`, code, keyCode);
                             return res;
                         }).catch(error => {
-                            console.log(`[${thisCommaand.name}] Failure:`, code);
+                            // console.log(`[${thisCommaand.name}] Failure:`, code);
                             if (code !== '500' && code !== 500) return thisCommaand.respond[500](...argsArray)
                             console.log('THIS SHOULD PROBABLY NOT HAPPEN!', error);
                         });

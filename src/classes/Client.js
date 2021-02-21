@@ -29,8 +29,8 @@ module.exports = (Client) => class extends Client {
                 return command.predicate(interaction)
                     .then(passed => { if (passed) return command.execute(interaction) })
                     .catch((error) => {
-                        command.respond[500](interaction);
                         console.log(error);
+                        return command.respond[500](interaction);
                     });
             }
         });
