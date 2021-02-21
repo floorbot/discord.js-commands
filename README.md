@@ -5,7 +5,7 @@ A small library for discord.js to add command uniformity with interactions
 #### Installation
 
 ```bash
-npm install git://github.com/floorbot-js/discord.js#interactions
+npm install git://github.com/floorbot-js/discord.js-commands
 ```
 
 #### Example
