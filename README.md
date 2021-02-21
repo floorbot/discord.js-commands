@@ -14,12 +14,22 @@ npm install git://github.com/floorbot-js/discord.js#interactions
 const Discord = require('discord.js-commands')(require('discord.js'));
 const client = new Discord.Client({
     token: '<bot token>',
-    publicKey: '<bot public key>'
-});
+    publicKey: '<bot public key>',
 
-const command = new Discord.Command(client, {
-    json: { name: 'ping', description: 'pong' },
-    execute: (interaction) => interaction.reply('pong!')
+    commands: {
+        ping: {
+            class: class extends Discord {
+                constructor(client) {
+                    super(client, {
+                        json: { name: 'ping', description: 'pong' },
+                        responses: { 200: (interaction, options) => interaction.reply('pong!') }
+                    })
+                }
+
+                execute(interaction) { return this.respond[200](interaction) }
+            }
+        }
+    }
 });
 
 client.once('ready', () => {
