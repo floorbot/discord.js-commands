@@ -15,7 +15,7 @@ module.exports = class Command {
 
         // These are cookie cutter responses for different events
         this.responses = Object.assign({
-            200: (interaction, options) => interaction.reply({ embed: this.getEmbedTemplate(interaction, { description: `Sorry! I've successfully processed your request 😕` }), hideSource: true }),
+            200: (interaction, options) => interaction.channel.send(options),
             400: (interaction, options) => interaction.reply({ embed: this.getEmbedTemplate(interaction, { description: `Sorry! I do not understand your request 😦` }), hideSource: true }),
             401: (interaction, options) => interaction.reply({ embed: this.getEmbedTemplate(interaction, { description: `Sorry! You do not have permission for this command 😑` }), hideSource: true }),
             403: (interaction, options) => interaction.reply({ embed: this.getEmbedTemplate(interaction, { description: `Sorry! This is not the appropriate place for NSFW content 😏` }), hideSource: true }),
@@ -60,7 +60,7 @@ module.exports = class Command {
             this.client.on('shardResume', (id, replayedEvents) => this.initialize())
             this.client.on('shardError', (error, shardID) => this.finalize());
             exitHook(() => {
-                console.log(`Safely Closing Command: ${this.constructor.name}`);
+                console.log(`Safely Closing Command: ${this.name}`);
                 return this.finalize();
             });
         }

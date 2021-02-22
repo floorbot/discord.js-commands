@@ -10,7 +10,7 @@ module.exports = class Task {
             this.client.on('shardResume', (id, replayedEvents) => this.initialize())
             this.client.on('shardError', (error, shardID) => this.finalize());
             exitHook(() => {
-                console.log(`Safely Closing Task: ${this.constructor.name}`);
+                console.log(`Safely Closing Task: ${this.name}`);
                 return this.finalize();
             });
         }
