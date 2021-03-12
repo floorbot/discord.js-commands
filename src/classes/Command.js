@@ -33,16 +33,18 @@ module.exports = class Command {
         const thisCommaand = this;
         this.respond = new Proxy(this.responses, {
             get(response, code) {
-                let keyCode = null;
+                const keyCodes = [];
                 const handler = {
                     get(responseCode, key) {
-                        keyCode = key;
-                        return new Proxy(responseCode[key], handler)
+                        keyCodes.push(key);
+                        const reflected = Reflect.get(responseCode, key);
+                        if (!reflected) return new Proxy((interaction, options) => interaction.reply(options), handler);
+                        return new Proxy(reflected, handler)
                     },
                     apply(target, thisArg, argsArray) {
-                        return target.apply(thisArg, argsArray).then(res => {
-                            client.emit('commandExecuted', thisCommaand, argsArray[0], code, keyCode);
-                            // console.log(`[${thisCommaand.name}] Success:`, code, keyCode);
+                        return Reflect.apply(target, thisArg, argsArray).then(res => {
+                            client.emit('commandExecuted', thisCommaand, argsArray[0], code, keyCodes);
+                            // console.log(`[${thisCommaand.name}] Success:`, code, keyCodes);
                             return res;
                         }).catch(error => {
                             // console.log(`[${thisCommaand.name}] Failure:`, code);
