@@ -1,5 +1,3 @@
-const Logger = require('./Logger');
-
 module.exports = (Client) => class extends Client {
     constructor(options) {
         super(options);
@@ -20,45 +18,38 @@ module.exports = (Client) => class extends Client {
             const CommandClass = options.commands[key].class;
             commands[key] = new CommandClass(this, commandOptions);
             if (commandOptions.post) this.interactionClient.createCommand(commands[key].json)
-                .then(Logger.log(commands[key].name, 'Successfully posted command'))
-                .catch(error => Logger.error(commands[key].name, ['Failed to post command', error]));
+                .then(() => this.emit('log', `[${commands[key].name}](POST) Success`))
+                .catch(error => {
+                    this.emit('log', `[${commands[key].name}](POST) Failed - ${error.toString()}`);
+                    this.emit('error', error);
+                });
             return commands;
         }, {});
 
         // Interaction command triggers
         this.on('interactionCreate', (interaction) => {
 
-            // These are temporary solutions to change later
-            interaction.replyEphemeral = (content) => {
+            // START OF TEMPORARY SOLUTIONS
+            const followup = function(data) { return interaction.client.api['webhooks'][interaction.client.applicationID][interaction.token].post({ data: data }).then(() => { return { followup: followup } }) }
+            const edit = function(data) { return interaction.client.api['webhooks'][interaction.client.applicationID][interaction.token]['messages']['@original'].patch({ data: data }) }
+            interaction.reply = (options) => {
+                if (options.embed) options.embeds = [options.embed];
+                if (options.ephemeral && options?.embeds?.length) {
+                    options.ephemeral = false;
+                    this.emit('log', `[${interaction.commandName}] Unsupported Feature <ephemeral with embed>\n - Attempted to send ephemeral message with an embed\n - See <https://github.com/discord/discord-api-docs/issues/2318> for info\n - Removed the ephemeral message flag <workaround>`)
+                }
                 return interaction.client.api.interactions(interaction.id, interaction.token).callback.post({
-                    data: { type: 3, data: { flags: 64, content: content } }
+                    data: { type: 4, data: { ...options, flags: options.ephemeral ? 64 : undefined } }
+                }).then(res => {
+                    return { edit: edit, followup: followup }
                 })
             }
-            interaction.replyContent = (content) => {
+            interaction.defer = (options) => {
                 return interaction.client.api.interactions(interaction.id, interaction.token).callback.post({
-                    data: { type: 3, data: { content: content } }
-                })
+                    data: { type: 5, data: { flags: options.ephemeral ? 64 : undefined } }
+                }).then(res => { return { followup: followup } })
             }
-            interaction.replyData = (data) => {
-                return interaction.client.api.interactions(interaction.id, interaction.token).callback.post({
-                    data: { type: 3, data: data }
-                })
-            }
-            interaction.replyWait = () => {
-                return interaction.client.api.interactions(interaction.id, interaction.token).callback.post({
-                    data: { type: 2 }
-                })
-            }
-            interaction.editData = (data) => {
-                return interaction.client.api['webhooks'][interaction.client.applicationID][interaction.token]['messages']['@original'].patch({
-                    data: data
-                })
-            }
-            interaction.replyFollowup = (data) => {
-                return interaction.client.api['webhooks'][interaction.client.applicationID][interaction.token].post({
-                    data: data
-                })
-            }
+            // END OF TEMPORARY SOLUTIONS
 
             const startTime = Date.now();
             const command = this.commands[interaction.commandName];
@@ -72,10 +63,21 @@ module.exports = (Client) => class extends Client {
                 }).then(passed => {
                     if (passed) return command.execute(interaction);
                 }).catch((error) => {
-                    Logger.error(command.name, error)
+                    this.emit('log', `[${command.name}] Failed to execute correctly`);
+                    this.emit('error', error);
                     return interaction.replyContent(`*Sorry! I seem to have run into an issue with \`/${command.name}\` 😵*`);
                 }).finally(() => {
-                    Logger.log(command.name, ['Executed interaction in', Date.now() - startTime, 'milliseconds'])
+                    this.emit('log', `[${command.name}](execute) Command completed in ${Date.now() - startTime}ms`);
+                });
+            } else {
+                this.emit('log', `[${interaction.commandName}] NOT IMPLEMENTED`);
+                interaction.reply({
+                    embed: {
+                        color: 14840969,
+                        title: 'Not Implemented',
+                        description: `Sorry! \`${interaction.commandName}\` is not currently implemented 🥴\n\nPossible reasons you see this message:\n - *Planned or WIP command*\n - *Removed due to stability issues*\n\n*Please contact bot owner for more details*`
+                    },
+                    ephemeral: true
                 });
             }
         });
@@ -96,10 +98,11 @@ module.exports = (Client) => class extends Client {
                     }).then(passed => {
                         if (passed) return command.regexecute(message, matches[1]);
                     }).catch((error) => {
-                        Logger.error(command.name, error)
+                        this.emit('log', `[${command.name}] Failed to execute correctly`);
+                        this.emit('error', error);
                         return message.reply(`*Sorry! I seem to have run into an issue with \`${command.name}\` 😵*`);
                     }).finally(() => {
-                        Logger.log(command.name, ['Executed regex in', Date.now() - startTime, 'milliseconds'])
+                        this.emit('log', `[${command.name}](regex) Command completed in ${Date.now() - startTime}ms`);
                     });
                 }
             });
