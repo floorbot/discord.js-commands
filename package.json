@@ -17,7 +17,6 @@
     },
     "homepage": "https://github.com/floorbot-js/discord.js-commands#readme",
     "dependencies": {
-        "async-exit-hook": "^2.0.1",
-        "discord.js": "git+https://github.com/devsnek/discord.js.git#interactions"
+        "async-exit-hook": "^2.0.1"
     }
 }
