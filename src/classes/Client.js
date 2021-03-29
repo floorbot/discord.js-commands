@@ -1,4 +1,4 @@
-module.exports = (Client) => class extends Client {
+module.exports = (Discord) => class extends Client {
     constructor(options) {
         super(options);
         options.commands = options.commands || {};
@@ -44,7 +44,7 @@ module.exports = (Client) => class extends Client {
                     return { edit: edit, followup: followup }
                 })
             }
-            interaction.defer = (options) => {
+            interaction.defer = (options = {}) => {
                 return interaction.client.api.interactions(interaction.id, interaction.token).callback.post({
                     data: { type: 5, data: { flags: options.ephemeral ? 64 : undefined } }
                 }).then(res => { return { followup: followup } })
