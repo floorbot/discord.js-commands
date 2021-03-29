@@ -1,4 +1,4 @@
-module.exports = (Discord) => class extends Client {
+module.exports = (Client) => class extends Client {
     constructor(options) {
         super(options);
         options.commands = options.commands || {};
