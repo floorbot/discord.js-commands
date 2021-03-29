@@ -4,28 +4,6 @@ module.exports = (Client) => class extends Client {
         options.commands = options.commands || {};
         options.tasks = options.tasks || {};
 
-        // Initialise the tasks
-        this.tasks = Object.keys(options.tasks).reduce((tasks, key) => {
-            const taskOptions = options.tasks[key].options ?? {};
-            const TaskClass = options.tasks[key].class;
-            tasks[key] = new TaskClass(this, taskOptions);
-            return tasks;
-        }, {});
-
-        // Initialise the commands
-        this.commands = Object.keys(options.commands).reduce((commands, key) => {
-            const commandOptions = options.commands[key].options ?? {};
-            const CommandClass = options.commands[key].class;
-            commands[key] = new CommandClass(this, commandOptions);
-            if (commandOptions.post) this.interactionClient.createCommand(commands[key].json)
-                .then(() => this.emit('log', `[${commands[key].name}](POST) Success`))
-                .catch(error => {
-                    this.emit('log', `[${commands[key].name}](POST) Failed - ${error.toString()}`);
-                    this.emit('error', error);
-                });
-            return commands;
-        }, {});
-
         // Interaction command triggers
         this.on('interactionCreate', (interaction) => {
 
