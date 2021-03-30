@@ -4,31 +4,24 @@ module.exports = (Client) => class extends Client {
         options.commands = options.commands || {};
         options.tasks = options.tasks || {};
 
+        // Initialise the tasks
+        this.tasks = Object.keys(options.tasks).forEach((created, key) => {
+            const taskOptions = options.tasks[key].options ?? {};
+            const TaskClass = options.tasks[key].class;
+            created[key] = new TaskClass(this, taskOptions);
+            return created;
+        }, {})
+
+        // Initialise the commands
+        this.commands = Object.keys(options.commands).forEach((created, key) => {
+            const commandOptions = options.commands[key].options ?? {};
+            const CommandClass = options.commands[key].class;
+            created[key] = new CommandClass(this, commandOptions);
+            return created;
+        }, {})
+
         // Interaction command triggers
         this.on('interactionCreate', (interaction) => {
-
-            // START OF TEMPORARY SOLUTIONS
-            const followup = function(data) { return interaction.client.api['webhooks'][interaction.client.applicationID][interaction.token].post({ data: data }).then(() => { return { followup: followup } }) }
-            const edit = function(data) { return interaction.client.api['webhooks'][interaction.client.applicationID][interaction.token]['messages']['@original'].patch({ data: data }) }
-            interaction.reply = (options) => {
-                if (options.embed) options.embeds = [options.embed];
-                if (options.ephemeral && options?.embeds?.length) {
-                    options.ephemeral = false;
-                    this.emit('log', `[${interaction.commandName}] Unsupported Feature <ephemeral with embed>\n - Attempted to send ephemeral message with an embed\n - See <https://github.com/discord/discord-api-docs/issues/2318> for info\n - Removed the ephemeral message flag <workaround>`)
-                }
-                return interaction.client.api.interactions(interaction.id, interaction.token).callback.post({
-                    data: { type: 4, data: { ...options, flags: options.ephemeral ? 64 : undefined } }
-                }).then(res => {
-                    return { edit: edit, followup: followup }
-                })
-            }
-            interaction.defer = (options = {}) => {
-                return interaction.client.api.interactions(interaction.id, interaction.token).callback.post({
-                    data: { type: 5, data: { flags: options.ephemeral ? 64 : undefined } }
-                }).then(res => { return { followup: followup } })
-            }
-            // END OF TEMPORARY SOLUTIONS
-
             const startTime = Date.now();
             const command = this.commands[interaction.commandName];
             if (command) {
@@ -50,11 +43,11 @@ module.exports = (Client) => class extends Client {
             } else {
                 this.emit('log', `[${interaction.commandName}] NOT IMPLEMENTED`);
                 interaction.reply({
-                    embed: {
+                    embeds: [{
                         color: 14840969,
                         title: 'Not Implemented',
                         description: `Sorry! \`${interaction.commandName}\` is not currently implemented 🥴\n\nPossible reasons you see this message:\n - *Planned or WIP command*\n - *Removed due to stability issues*\n\n*Please contact bot owner for more details*`
-                    },
+                    }],
                     ephemeral: true
                 });
             }
