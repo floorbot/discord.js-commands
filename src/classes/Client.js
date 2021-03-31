@@ -8,7 +8,7 @@ module.exports = (Client) => class extends Client {
         this.predicates = options.predicates || [];
 
         // Initialise the tasks
-        this.tasks = Object.keys(options.tasks).forEach((created, key) => {
+        this.tasks = Object.keys(options.tasks).reduce((created, key) => {
             const taskOptions = options.tasks[key].options ?? {};
             const TaskClass = options.tasks[key].class;
             created[key] = new TaskClass(this, taskOptions);
@@ -16,7 +16,7 @@ module.exports = (Client) => class extends Client {
         }, {})
 
         // Initialise the commands
-        this.commands = Object.keys(options.commands).forEach((created, key) => {
+        this.commands = Object.keys(options.commands).reduce((created, key) => {
             const commandOptions = options.commands[key].options ?? {};
             const CommandClass = options.commands[key].class;
             created[key] = new CommandClass(this, commandOptions);
