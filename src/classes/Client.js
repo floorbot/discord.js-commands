@@ -5,7 +5,7 @@ module.exports = (Client) => class extends Client {
         options.tasks = options.tasks || {};
 
         // Make sure these are complete before logging in
-        this.predicate = options.predicate || Promise.resolve();
+        this.predicates = options.predicates || [];
 
         // Initialise the tasks
         this.tasks = Object.keys(options.tasks).forEach((created, key) => {
@@ -84,6 +84,8 @@ module.exports = (Client) => class extends Client {
     }
 
     login(token) {
-        return this.predicate.then(super.login(token));
+        return this.predicates.reduce((promise, predicate) => {
+            return promise.then(predicate)
+        }, Promise.resolve()).then(super.login(token));
     }
 }
