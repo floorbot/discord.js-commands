@@ -4,6 +4,9 @@ module.exports = (Client) => class extends Client {
         options.commands = options.commands || {};
         options.tasks = options.tasks || {};
 
+        // Make sure these are complete before logging in
+        this.predicate = options.predicate || Promise.resolve();
+
         // Initialise the tasks
         this.tasks = Object.keys(options.tasks).forEach((created, key) => {
             const taskOptions = options.tasks[key].options ?? {};
@@ -36,7 +39,7 @@ module.exports = (Client) => class extends Client {
                 }).catch((error) => {
                     this.emit('log', `[${command.name}] Failed to execute correctly`);
                     this.emit('error', error);
-                    return interaction.replyContent(`*Sorry! I seem to have run into an issue with \`/${command.name}\` 😵*`);
+                    return interaction.reply(`*Sorry! I seem to have run into an issue with \`/${command.name}\` 😵*`);
                 }).finally(() => {
                     this.emit('log', `[${command.name}](execute) Command completed in ${Date.now() - startTime}ms`);
                 });
@@ -78,5 +81,9 @@ module.exports = (Client) => class extends Client {
                 }
             });
         });
+    }
+
+    login(token) {
+        return this.predicate.then(super.login(token));
     }
 }

@@ -32,10 +32,6 @@ const client = new Discord.Client({
     }
 });
 
-client.once('ready', () => {
-    client.registerCommand(command, false); // true will update/post to discord
-})
-
 client.on('ready', () => console.log(`Logged in as ${client.user.tag}!`));
 client.login('<bot token>');
 ```
