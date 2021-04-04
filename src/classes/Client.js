@@ -24,7 +24,7 @@ module.exports = (Client) => class extends Client {
         }, {})
 
         // Interaction command triggers
-        this.on('interactionCreate', (interaction) => {
+        this.on('interaction', (interaction) => {
             const startTime = Date.now();
             const command = this.commands[interaction.commandName];
             if (command) {
