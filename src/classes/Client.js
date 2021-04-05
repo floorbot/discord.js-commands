@@ -1,7 +1,7 @@
 module.exports = (Client) => class extends Client {
     constructor(options) {
         super(options);
-        options.commandHandlers = options.commands || {};
+        options.commands = options.commands || {};
         options.tasks = options.tasks || {};
 
         // Make sure these are complete before logging in
@@ -16,7 +16,7 @@ module.exports = (Client) => class extends Client {
         }, {})
 
         // Initialise the commands
-        this.commandHandlers = Object.keys(options.commands).reduce((created, key) => {
+        this.commands = Object.keys(options.commands).reduce((created, key) => {
             const commandOptions = options.commands[key].options ?? {};
             const CommandClass = options.commands[key].class;
             created[key] = new CommandClass(this, commandOptions);
@@ -26,7 +26,7 @@ module.exports = (Client) => class extends Client {
         // Interaction command triggers
         this.on('interaction', (interaction) => {
             const startTime = Date.now();
-            const command = this.commandHandlers[interaction.commandName];
+            const command = this.commands[interaction.commandName];
             if (command) {
                 new Promise((resolve, reject) => {
                     const { channel, member } = interaction;
@@ -60,7 +60,7 @@ module.exports = (Client) => class extends Client {
         this.on('message', message => {
             const startTime = Date.now();
             const { channel, guild, member } = message;
-            Object.values(this.commandHandlers).filter(command => command.regex).forEach(command => {
+            Object.values(this.commands).filter(command => command.regex).forEach(command => {
                 const matches = command.regex.exec(message.content);
                 if (matches) {
                     new Promise((resolve, reject) => {
