@@ -46,12 +46,11 @@ module.exports = (Client) => class extends Client {
             } else {
                 this.emit('log', `[${interaction.commandName}] NOT IMPLEMENTED`);
                 interaction.reply({
-                    embeds: [{
+                    embed: {
                         color: 14840969,
                         title: 'Not Implemented',
                         description: `Sorry! \`${interaction.commandName}\` is not currently implemented 🥴\n\nPossible reasons you see this message:\n - *Planned or WIP command*\n - *Removed due to stability issues*\n\n*Please contact bot owner for more details*`
-                    }],
-                    ephemeral: true
+                    }
                 });
             }
         });
