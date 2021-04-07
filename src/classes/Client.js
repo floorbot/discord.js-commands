@@ -4,6 +4,8 @@ module.exports = (Client) => class extends Client {
         options.commands = options.commands || {};
         options.tasks = options.tasks || {};
 
+        this.setMaxListeners(50);
+
         // Make sure these are complete before logging in
         this.predicates = options.predicates || [];
 
