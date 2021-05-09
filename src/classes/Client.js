@@ -22,10 +22,11 @@ module.exports = (Client) => class extends Client {
             return created;
         }, {})
 
-        this.on('shardReady', (id, unavailableGuilds) => { this.tasks.concat(this.commands).forEach(command => { if (command.initialise()) client.emit('log', `[${command.name}] Initialised {Shard Ready}`) }) });
-        this.on('shardResume', (id, replayedEvents) => { this.tasks.concat(this.commands).forEach(command => { if (command.initialise()) client.emit('log', `[${command.name}] Initialised {Shard Resume}`) }) });
-        this.on('shardError', (error, shardID) => { this.tasks.concat(this.commands).forEach(command => { if (command.finalise()) client.emit('log', `[${command.name}] Finalised {Shard Error}`) }) });
-        exitHook(() => { this.tasks.concat(this.commands).forEach(command => { if (command.finalise()) client.emit('log', `[${command.name}] Finalised {Exit Hook}`) }) });
+        const allTasks = [...Object.values(this.tasks), ...Object.values(this.commands)];
+        this.on('shardReady', (id, unavailableGuilds) => { allTasks.forEach(command => { if (command.initialise()) client.emit('log', `[${command.name}] Initialised {Shard Ready}`) }) });
+        this.on('shardResume', (id, replayedEvents) => { allTasks.forEach(command => { if (command.initialise()) client.emit('log', `[${command.name}] Initialised {Shard Resume}`) }) });
+        this.on('shardError', (error, shardID) => { allTasks.forEach(command => { if (command.finalise()) client.emit('log', `[${command.name}] Finalised {Shard Error}`) }) });
+        exitHook(() => { allTasks.forEach(command => { if (command.finalise()) client.emit('log', `[${command.name}] Finalised {Exit Hook}`) }) });
 
         this.on('interaction', (interaction) => {
             const startTime = Date.now();
