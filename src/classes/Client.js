@@ -23,10 +23,10 @@ module.exports = (Client) => class extends Client {
         }, {})
 
         const allTasks = [...Object.values(this.tasks), ...Object.values(this.commands)];
-        this.on('shardReady', (id, unavailableGuilds) => { allTasks.forEach(command => { if (command.initialise()) client.emit('log', `[${command.name}] Initialised {Shard Ready}`) }) });
-        this.on('shardResume', (id, replayedEvents) => { allTasks.forEach(command => { if (command.initialise()) client.emit('log', `[${command.name}] Initialised {Shard Resume}`) }) });
-        this.on('shardError', (error, shardID) => { allTasks.forEach(command => { if (command.finalise()) client.emit('log', `[${command.name}] Finalised {Shard Error}`) }) });
-        exitHook(() => { allTasks.forEach(command => { if (command.finalise()) client.emit('log', `[${command.name}] Finalised {Exit Hook}`) }) });
+        this.on('shardReady', (id, unavailableGuilds) => { allTasks.forEach(command => { if (command.initialise()) this.emit('log', `[${command.name}] Initialised {Shard Ready}`) }) });
+        this.on('shardResume', (id, replayedEvents) => { allTasks.forEach(command => { if (command.initialise()) this.emit('log', `[${command.name}] Initialised {Shard Resume}`) }) });
+        this.on('shardError', (error, shardID) => { allTasks.forEach(command => { if (command.finalise()) this.emit('log', `[${command.name}] Finalised {Shard Error}`) }) });
+        exitHook(() => { allTasks.forEach(command => { if (command.finalise()) this.emit('log', `[${command.name}] Finalised {Exit Hook}`) }) });
 
         // Listen and process interactions
         this.on('interaction', (interaction) => {
