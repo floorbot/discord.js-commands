@@ -5,11 +5,9 @@ module.exports = class Task {
         this.name = options.name || this.constructor.name;
     }
 
-    initialise() {
-        return null; // Called when reconnecting or application starting up
-    }
+    // Called when reconnecting or application starting up
+    initialise() { return null; }
 
-    finalise() {
-        return null; // Called when disconnected or application closing
-    }
+    // Called when disconnected or application closing
+    finalise() { return null; }
 }

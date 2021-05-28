@@ -28,47 +28,38 @@ module.exports = (Client) => class extends Client {
         this.on('shardError', (error, shardID) => { allTasks.forEach(command => { if (command.finalise()) client.emit('log', `[${command.name}] Finalised {Shard Error}`) }) });
         exitHook(() => { allTasks.forEach(command => { if (command.finalise()) client.emit('log', `[${command.name}] Finalised {Exit Hook}`) }) });
 
+        // Listen and process interactions
         this.on('interaction', (interaction) => {
-            const startTime = Date.now();
             if (!interaction.isCommand()) return this.emit('log', `[UNKNOWN] Unknown Interaction`, interaction);
             const command = this.commands[interaction.commandName];
             if (command) {
                 const { channel, member } = interaction;
-                if (!command.allowDM && !member) return interaction.reply(`*Sorry! \`/${command.name}\` can only be used in guilds 😒*`, { ephemeral: true });
                 if (member && command.nsfw && !channel.nsfw) return interaction.reply(`*Sorry! \`/${command.name}\` can only be used in \`NSFW\` channels 😏*`, { ephemeral: true });
                 return command.execute(interaction).catch((error) => {
                     this.emit('error', `[${command.name}] Failed to execute correctly`, error);
                     return interaction.reply(`*Sorry! I seem to have run into an issue with \`/${command.name}\` 😵*`);
                 }).finally(() => {
-                    this.emit('log', `[${command.name}](execute) Command completed in ${Date.now() - startTime}ms`);
+                    this.emit('log', `[${command.name}](execute) Command completed in ${Date.now() - interaction.createdTimestamp}ms`);
                 });
             } else {
                 this.emit('log', `[${interaction.commandName}] Not Implemented`);
-                interaction.reply({
-                    embed: {
-                        color: 14840969,
-                        title: 'Not Implemented',
-                        description: `Sorry! \`${interaction.commandName}\` is not currently implemented 🥴\n\nPossible reasons you see this message:\n - *Planned or WIP command*\n - *Removed due to stability issues*\n\n*Please contact bot owner for more details*`
-                    }
-                });
+                return interaction.reply(`Sorry! \`${this.name}\` is not currently implemented 🥴\n\nPossible reasons you see this message:\n - *Planned or WIP command*\n - *Removed due to stability issues*\n\n*Please contact bot owner for more details*`);
             }
         });
 
-        // Regex triggers on messages
+        // Check new messages for regex triggers
         this.on('message', message => {
-            const startTime = Date.now();
             Object.values(this.commands).filter(command => command.regex).forEach(command => {
                 const matches = command.regex.exec(message.content);
                 if (matches) {
-                    const { channel, guild, member } = message;
+                    const { channel, guild } = message;
                     if (guild && !channel.permissionsFor(guild.me).has('SEND_MESSAGES')) return;
-                    if (!command.allowDM && !member) return interaction.reply(`*Sorry! \`/${command.name}\` can only be used in guilds 😒*`, { ephemeral: true });
-                    if (member && command.nsfw && !channel.nsfw) return interaction.reply(`*Sorry! \`/${command.name}\` can only be used in \`NSFW\` channels 😏*`, { ephemeral: true });
+                    if (guild && command.nsfw && !channel.nsfw) return;
                     return command.regexecute(message, matches[1]).catch((error) => {
                         this.emit('error', `[${command.name}] Failed to regexecute correctly`, error);
                         return message.reply(`*Sorry! I seem to have run into an issue with \`/${command.name}\` 😵*`);
                     }).finally(() => {
-                        this.emit('log', `[${command.name}](regex) Command completed in ${Date.now() - startTime}ms`);
+                        this.emit('log', `[${command.name}](regex) Command completed in ${Date.now() - message.createdTimestamp}ms`);
                     });
                 }
             });
