@@ -34,16 +34,16 @@ module.exports = (Client) => class extends Client {
             const command = this.commands[interaction.commandName];
             if (command) {
                 const { channel, member } = interaction;
-                if (member && command.nsfw && !channel.nsfw) return interaction.reply(`*Sorry! \`/${command.name}\` can only be used in \`NSFW\` channels 😏*`, { ephemeral: true });
+                if (member && command.nsfw && !channel.nsfw) return interaction.followUp(`*Sorry! \`/${command.name}\` can only be used in \`NSFW\` channels 😏*`, { ephemeral: true });
                 return command.execute(interaction).catch((error) => {
-                    this.emit('error', `[${command.name}] Failed to execute correctly`, error);
-                    return interaction.reply(`*Sorry! I seem to have run into an issue with \`/${command.name}\` 😵*`);
+                    this.emit('log', `[${command.name}] Failed to execute correctly`, error);
+                    return interaction.followUp(`*Sorry! I seem to have run into an issue with \`/${command.name}\` 😵*`);
                 }).finally(() => {
                     this.emit('log', `[${command.name}](execute) Command completed in ${Date.now() - interaction.createdTimestamp}ms`);
                 });
             } else {
                 this.emit('log', `[${interaction.commandName}] Not Implemented`);
-                return interaction.reply(`Sorry! \`${this.name}\` is not currently implemented 🥴\n\nPossible reasons you see this message:\n - *Planned or WIP command*\n - *Removed due to stability issues*\n\n*Please contact bot owner for more details*`);
+                return interaction.followUp(`Sorry! \`${this.name}\` is not currently implemented 🥴\n\nPossible reasons you see this message:\n - *Planned or WIP command*\n - *Removed due to stability issues*\n\n*Please contact bot owner for more details*`);
             }
         });
 
@@ -56,7 +56,7 @@ module.exports = (Client) => class extends Client {
                     if (guild && !channel.permissionsFor(guild.me).has('SEND_MESSAGES')) return;
                     if (guild && command.nsfw && !channel.nsfw) return;
                     return command.regexecute(message, matches[1]).catch((error) => {
-                        this.emit('error', `[${command.name}] Failed to regexecute correctly`, error);
+                        this.emit('log', `[${command.name}] Failed to regexecute correctly`, error);
                         return message.reply(`*Sorry! I seem to have run into an issue with \`/${command.name}\` 😵*`);
                     }).finally(() => {
                         this.emit('log', `[${command.name}](regex) Command completed in ${Date.now() - message.createdTimestamp}ms`);
