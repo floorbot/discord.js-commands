@@ -5,7 +5,7 @@ A small library for discord.js to add command uniformity with interactions
 #### Installation
 
 ```bash
-npm install git://github.com/floorbot-js/discord.js-commands
+npm install github:floorbot-js/discord.js-commands
 ```
 
 #### Example
@@ -16,28 +16,21 @@ const client = new Discord.Client({
     token: '<bot token>',
     publicKey: '<bot public key>',
 
-    commands: {
-        ping: {
-            class: class extends Discord {
-                constructor(client) {
-                    super(client, {
-                        json: { name: 'ping', description: 'pong' },
-                        responses: { 200: (interaction, options) => interaction.reply('pong!') }
-                    })
-                }
-
-                execute(interaction) { return this.respond[200](interaction) }
-            }
-        }
+    handlers: {
+        tasks: [ /** TODO EXAMPLES **/ ],
+        commands: [ /** TODO EXAMPLES **/ ],
+        components: [ /** TODO EXAMPLES **/ ],
+        regexes: [ /** TODO EXAMPLES **/ ]
     }
 });
 
-client.on('ready', () => console.log(`Logged in as ${client.user.tag}!`));
-client.login('<bot token>');
+client.on('log', (string, object) => { console.log(string, object) })
+client.on('ready', () => client.emit('log', `[SETUP] Logged in as <${client.user.tag}>`));
+client.login();
 ```
 
 #### Disclaimer
 
 This is still a work in progress...
-The only support discord.js currently has for interactions is a draft PR ([#5106](https://github.com/discordjs/discord.js/pull/5106)) which comes with all sorts of errors and issues.
-To solve the current issues that cause this package to break use the #interactions branch from this [fork of the PR](https://github.com/floorbot-js/discord.js/tree/interactions).
+discord.js does not officially support a lot of the lastest discord features. This has resulted in using various frequently changing draft pull requests.
+This also means the discord.js dependency changes at a moments notice and will keep changing until these features are officially implemented.
