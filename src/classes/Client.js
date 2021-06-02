@@ -6,29 +6,29 @@ module.exports = (Client) => class extends Client {
         super(options);
 
         options.handlers = options.handlers || {};
-        const { taskData, commandData, componentData, regexData } = options.handlers;
+        const { tasks, commands, components, regexes } = options.handlers;
         this.handlers = {
-            tasks: taskData ? Object.keys(taskData).reduce((created, key) => {
-                const taskOptions = taskData[key].options ?? {};
-                const TaskClass = taskData[key].class;
+            tasks: tasks ? Object.keys(tasks).reduce((created, key) => {
+                const taskOptions = tasks[key].options ?? {};
+                const TaskClass = tasks[key].class;
                 created[key] = new TaskClass(this, taskOptions);
                 return created;
             }, {}) : {},
-            commands: commandData ? Object.keys(commandData).reduce((created, key) => {
-                const commandOptions = commandData[key].options ?? {};
-                const CommandClass = commandData[key].class;
+            commands: commands ? Object.keys(commands).reduce((created, key) => {
+                const commandOptions = commands[key].options ?? {};
+                const CommandClass = commands[key].class;
                 created[key] = new CommandClass(this, commandOptions);
                 return created;
             }, {}) : {},
-            components: componentData ? Object.keys(componentData).reduce((created, key) => {
-                const componentOptions = componentData[key].options ?? {};
-                const ComponentClass = componentData[key].class;
+            components: components ? Object.keys(components).reduce((created, key) => {
+                const componentOptions = components[key].options ?? {};
+                const ComponentClass = components[key].class;
                 created[key] = new ComponentClass(this, componentOptions);
                 return created;
             }, {}) : {},
-            regexes: regexData ? Object.keys(regexData).reduce((created, key) => {
-                const regexOptions = regexData[key].options ?? {};
-                const RegexClass = regexData[key].class;
+            regexes: regexes ? Object.keys(regexes).reduce((created, key) => {
+                const regexOptions = regexes[key].options ?? {};
+                const RegexClass = regexes[key].class;
                 created[key] = new RegexClass(this, regexOptions);
                 return created;
             }, {}) : {},
@@ -60,7 +60,7 @@ module.exports = (Client) => class extends Client {
                     }
                 }
                 case 'MessageComponentInteraction': {
-                    const component = this.handlers.component[interaction.customID.split('-')[0]];
+                    const component = this.handlers.components[interaction.customID.split('-')[0]];
                     if (component) {
                         const { channel, member } = interaction;
                         if (member && component.nsfw && !channel.nsfw) return interaction.followUp(`*Sorry! \`/${component.name}\` can only be used in \`NSFW\` channels 😏*`, { ephemeral: true });

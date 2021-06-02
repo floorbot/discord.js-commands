@@ -24,7 +24,7 @@ const client = new Discord.Client({
     }
 });
 
-client.on('log', (string, object) => { console.log(string, object) })
+client.on('log', (string, object) => { console.log(string, object || '') });
 client.on('ready', () => client.emit('log', `[SETUP] Logged in as <${client.user.tag}>`));
 client.login();
 ```
