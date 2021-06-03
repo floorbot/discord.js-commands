@@ -1,13 +1,11 @@
-const Task = require('../Task');
-
-module.exports = class Component extends Task {
+module.exports = (superclass) => class Component extends superclass {
 
     constructor(client, options) {
         super(client, options);
     }
 
     /**
-     * onComponent - Called when this feature should run from a component interaction
+     * onComponent - Called when this mixin should run from a component interaction
      *
      * @param {MessageComponentInteraction} interaction A discord message component interaction to process
      * @return {Promise} A resolvable promise to indicate success

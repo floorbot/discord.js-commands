@@ -1,29 +1,29 @@
-const { MessageEmbed } = require('discord.js');
+const { Base, MessageEmbed } = require('discord.js');
 
-module.exports = class Task {
+module.exports = class Handler extends Base {
 
     constructor(client, options = {}) {
 
         /**
-         * The discord client that created this feature
+         * The discord client that created this handler
          * @type {Client}
          */
         this.client = client;
 
         /**
-         * The name of this feature
+         * The id of this handler
          * @type {String}
          */
-        this.name = options.name || this.constructor.name;
+        this.id = options.id || undefined;
 
         /**
-         * The name of the group this feature is part of
+         * The name of the group this handler is part of
          * @type ?{String}
          */
         this.group = options.group ?? null;
 
         /**
-         * Whether this feature is NSFW or not
+         * Whether this handler is NSFW or not
          * @type {Boolean}
          */
         this.nsfw = options.nsfw ?? false;
@@ -39,7 +39,7 @@ module.exports = class Task {
     /**
      * finalise - Called when a client disconnected or the application is closing
      *
-     * @return {Boolean} Whether or not the feature "finalised"
+     * @return {Boolean} Whether or not the handler "finalised"
      */
     finalise() { return null; }
 
@@ -54,5 +54,24 @@ module.exports = class Task {
         const { member } = context;
         return new MessageEmbed(data)
             .setColor(member?.displayColor ?? data?.color ?? 14840969);
+    }
+
+    /**
+     * getConstructorChain - Returns an array of the prototype chain for this object
+     *
+     * @param {Boolean} names Whether or not to return an array of names only
+     * @return {Array} An array of names or prototypes for this object
+     */
+    getConstructorChain(names = false) {
+        const constructors = [];
+        let prototype = this;
+
+        while (prototype = Object.getPrototypeOf(prototype)) {
+            constructors.push(prototype.constructor || null);
+        }
+
+        return names ? constructors.map(function(constructor) {
+            return constructor ? constructor.toString().split(/\s|\(/)[1] : null;
+        }) : constructors;
     }
 }

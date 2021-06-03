@@ -2,11 +2,14 @@ module.exports = Discord => {
 
     Discord.Client = require('./classes/Client')(Discord.Client);
     Discord.Util = require('./classes/Util')(Discord.Util);
-    Discord.Task = require('./classes/Task');
+    Discord.Handler = require('./classes/Handler');
+    Discord.Mixin = require('./classes/Mixin');
 
-    Discord.Component = require('./classes/handlers/Component');
-    Discord.Command = require('./classes/handlers/Command');
-    Discord.Regex = require('./classes/handlers/Regex');
+    Object.assign(Discord.Mixin, {
+        Component: require('./classes/mixins/Component'),
+        Command: require('./classes/mixins/Command'),
+        Regex: require('./classes/mixins/Regex')
+    });
 
     return Discord;
 }

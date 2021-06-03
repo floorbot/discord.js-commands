@@ -5,97 +5,72 @@ module.exports = (Client) => class extends Client {
     constructor(options) {
         super(options);
 
-        options.handlers = options.handlers || {};
-        const { tasks, commands, components, regexes } = options.handlers;
-        this.handlers = {
-            tasks: tasks ? Object.keys(tasks).reduce((created, key) => {
-                const taskOptions = tasks[key].options ?? {};
-                const TaskClass = tasks[key].class;
-                created[key] = new TaskClass(this, taskOptions);
-                return created;
-            }, {}) : {},
-            commands: commands ? Object.keys(commands).reduce((created, key) => {
-                const commandOptions = commands[key].options ?? {};
-                const CommandClass = commands[key].class;
-                created[key] = new CommandClass(this, commandOptions);
-                return created;
-            }, {}) : {},
-            components: components ? Object.keys(components).reduce((created, key) => {
-                const componentOptions = components[key].options ?? {};
-                const ComponentClass = components[key].class;
-                created[key] = new ComponentClass(this, componentOptions);
-                return created;
-            }, {}) : {},
-            regexes: regexes ? Object.keys(regexes).reduce((created, key) => {
-                const regexOptions = regexes[key].options ?? {};
-                const RegexClass = regexes[key].class;
-                created[key] = new RegexClass(this, regexOptions);
-                return created;
-            }, {}) : {},
-        };
+        const handlers = options.handlers || {};
+        this.handlers = Object.keys(handlers).reduce((created, key) => {
+            const handlersOptions = handlers[key].options ?? {};
+            const HandlersClass = handlers[key].class;
+            created[key] = new HandlersClass(this, handlersOptions);
+            return created;
+        }, {});
 
-        const allTasks = Object.values(this.handlers).reduce((array, tasks) => [...array, ...Object.values(tasks)], [])
-        this.on('shardReady', (id, unavailableGuilds) => { allTasks.forEach(task => { if (task.initialise()) this.emit('log', `[${task.name}] Initialised {Shard Ready}`) }) });
-        this.on('shardResume', (id, replayedEvents) => { allTasks.forEach(task => { if (task.initialise()) this.emit('log', `[${task.name}] Initialised {Shard Resume}`) }) });
-        this.on('shardError', (error, shardID) => { allTasks.forEach(task => { if (task.finalise()) this.emit('log', `[${task.name}] Finalised {Shard Error}`) }) });
-        exitHook(() => { allTasks.forEach(task => { if (task.finalise()) this.emit('log', `[${task.name}] Finalised {Exit Hook}`) }) });
+        const allHandlers = Object.values(this.handlers);
+        this.on('shardReady', (id, unavailableGuilds) => { allHandlers.forEach(handler => { if (handler.initialise()) this.emit('log', `[${handler.id}] Initialised {Shard Ready}`) }) });
+        this.on('shardResume', (id, replayedEvents) => { allHandlers.forEach(handler => { if (handler.initialise()) this.emit('log', `[${handler.id}] Initialised {Shard Resume}`) }) });
+        this.on('shardError', (error, shardID) => { allHandlers.forEach(handler => { if (handler.finalise()) this.emit('log', `[${handler.id}] Finalised {Shard Error}`) }) });
+        exitHook(() => { allHandlers.forEach(handler => { if (handler.finalise()) this.emit('log', `[${handler.id}] Finalised {Exit Hook}`) }) });
 
         // Listen and process interactions
         this.on('interaction', (interaction) => {
+            const { channel, member } = interaction;
+
             switch (interaction.constructor.name) {
                 case 'CommandInteraction': {
-                    const command = this.handlers.commands[interaction.commandName];
-                    if (command) {
-                        const { channel, member } = interaction;
-                        if (member && command.nsfw && !channel.nsfw) return interaction.followUp(`*Sorry! \`/${command.name}\` can only be used in \`NSFW\` channels 😏*`, { ephemeral: true });
-                        return command.onCommand(interaction).then(() => {
-                            this.emit('log', `[${command.name}](Command) Command completed in ${Date.now() - interaction.createdTimestamp}ms`);
-                        }).catch((error) => {
-                            this.emit('log', `[${command.name}] Failed to execute correctly`, error);
-                            return interaction.followUp(`*Sorry! I seem to have run into an issue with \`/${command.name}\` 😵*`);
-                        }).catch(console.error);
-                    } else {
-                        this.emit('log', `[${interaction.commandName}] Not Implemented`);
-                        return interaction.followUp(`Sorry! \`${this.name}\` is not currently implemented 🥴\n\nPossible reasons you see this message:\n - *Planned or WIP command*\n - *Removed due to stability issues*\n\n*Please contact bot owner for more details*`).catch(console.error);
-                    }
+                    const handler = this.handlers.filter(handler => handler.getConstructorChain(true).includes('Command'))[interaction.commandName];
+                    if (member && handler.nsfw && !channel.nsfw) return interaction.followUp(`*Sorry! \`/${handler.id}\` can only be used in \`NSFW\` channels 😏*`, { ephemeral: true });
+                    if (handler) return handler.onCommand(interaction).then(() => {
+                        this.emit('log', `[${handler.id}](Handler) Command completed in ${Date.now() - interaction.createdTimestamp}ms`);
+                    }).catch((error) => {
+                        this.emit('log', `[${handler.id}] Failed to execute correctly`, error);
+                        return interaction.followUp(`*Sorry! I seem to have run into an issue with \`/${handler.id}\` 😵*`);
+                    }).catch(console.error);
+                    this.emit('log', `[${interaction.commandName}] Not Implemented`);
+                    return interaction.followUp(`Sorry! Command \`${interaction.commandName}\` is not currently implemented 🥴\n\nPossible reasons you see this message:\n - *Planned or WIP command*\n - *Removed due to stability issues*\n\n*Please contact bot owner for more details*`).catch(console.error);
                 }
                 case 'MessageComponentInteraction': {
-                    const component = this.handlers.components[interaction.customID.split('-')[0]];
-                    if (component) {
-                        const { channel, member } = interaction;
-                        if (member && component.nsfw && !channel.nsfw) return interaction.followUp(`*Sorry! \`/${component.name}\` can only be used in \`NSFW\` channels 😏*`, { ephemeral: true });
-                        return component.onComponent(interaction).then(() => {
-                            this.emit('log', `[${component.name}](Component) Component completed in ${Date.now() - interaction.createdTimestamp}ms`);
-                        }).catch((error) => {
-                            this.emit('log', `[${component.name}] Failed to execute correctly`, error);
-                            return interaction.followUp(`*Sorry! I seem to have run into an issue with \`/${component.name}\` 😵*`);
-                        }).catch(console.error);
-                    } else {
-                        this.emit('log', `[${interaction.customID}] Not Implemented`);
-                        return interaction.followUp(`Sorry! \`${this.name}\` is not currently implemented 🥴\n\nPossible reasons you see this message:\n - *Planned or WIP component*\n - *Removed due to stability issues*\n\n*Please contact bot owner for more details*`).catch(console.error);
-                    }
+                    const handler = this.handlers.filter(handler => handler.getConstructorChain(true).includes('Component'))[interaction.customID.split(' ')[0]];
+                    if (member && handler.nsfw && !channel.nsfw) return interaction.followUp(`*Sorry! \`/${handler.id}\` can only be used in \`NSFW\` channels 😏*`, { ephemeral: true });
+                    if (handler) return handler.onComponent(interaction).then(() => {
+                        this.emit('log', `[${handler.id}](Handler) Component completed in ${Date.now() - interaction.createdTimestamp}ms`);
+                    }).catch((error) => {
+                        this.emit('log', `[${handler.id}] Failed to execute correctly`, error);
+                        return interaction.followUp(`*Sorry! I seem to have run into an issue with \`/${handler.id}\` 😵*`);
+                    }).catch(console.error);
+                    this.emit('log', `[${interaction.customID}] Not Implemented`);
+                    return interaction.followUp(`Sorry! Component \`${interaction.customID}\` is not currently implemented 🥴\n\nPossible reasons you see this message:\n - *Planned or WIP component*\n - *Removed due to stability issues*\n\n*Please contact bot owner for more details*`).catch(console.error);
                 }
                 default:
-                    return this.emit('log', `[UNKNOWN] Unknown Interaction`, interaction);
+                    return this.emit('log', `[Support] Unknown Interaction Type`, interaction);
             }
         });
 
         // Check new messages for regex triggers
         this.on('message', message => {
-            Object.values(this.handlers.regexes).forEach(task => {
-                const matches = task.regex.exec(message.content);
-                if (matches) {
-                    const { channel, guild } = message;
-                    if (guild && !channel.permissionsFor(guild.me).has('SEND_MESSAGES')) return;
-                    if (guild && task.nsfw && !channel.nsfw) return;
-                    return task.onRegex(message, matches[1]).catch((error) => {
-                        this.emit('log', `[${task.name}] Failed to regexecute correctly`, error);
-                        return message.reply(`*Sorry! I seem to have run into an issue with \`/${task.name}\` 😵*`);
-                    }).finally(() => {
-                        this.emit('log', `[${task.name}](regex) Command completed in ${Date.now() - message.createdTimestamp}ms`);
-                    });
-                }
-            });
+            Object.values(this.handlers)
+                .filter(handler => handler.getConstructorChain(true).includes('Regex'))
+                .forEach(handler => {
+                    const matches = handler.regex.exec(message.content);
+                    if (matches) {
+                        const { channel, guild } = message;
+                        if (guild && !channel.permissionsFor(guild.me).has('SEND_MESSAGES')) return;
+                        if (guild && handler.nsfw && !channel.nsfw) return;
+                        return handler.onRegex(message, matches[1]).catch((error) => {
+                            this.emit('log', `[${handler.id}] Failed to regexecute correctly`, error);
+                            return message.reply(`*Sorry! I seem to have run into an issue with \`/${handler.id}\` 😵*`);
+                        }).finally(() => {
+                            this.emit('log', `[${handler.id}](regex) Command completed in ${Date.now() - message.createdTimestamp}ms`);
+                        });
+                    }
+                });
         });
     }
 }

@@ -1,6 +1,4 @@
-const Task = require('../Task');
-
-module.exports = class Regex extends Task {
+module.exports = (superclass) => class Regex extends superclass {
 
     constructor(client, options) {
         super(client, options);
