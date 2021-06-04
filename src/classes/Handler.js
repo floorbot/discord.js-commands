@@ -3,18 +3,19 @@ const { Base, MessageEmbed } = require('discord.js');
 module.exports = class Handler extends Base {
 
     constructor(client, options = {}) {
-
-        /**
-         * The discord client that created this handler
-         * @type {Client}
-         */
-        this.client = client;
+        super(client);
 
         /**
          * The id of this handler
          * @type {String}
          */
         this.id = options.id || undefined;
+
+        /**
+         * The name of this handler
+         * @type {String}
+         */
+        this.name = options.name || undefined;
 
         /**
          * The name of the group this handler is part of

@@ -25,8 +25,8 @@ module.exports = (Client) => class extends Client {
 
             switch (interaction.constructor.name) {
                 case 'CommandInteraction': {
-                    const handler = this.handlers.filter(handler => handler.getConstructorChain(true).includes('Command'))[interaction.commandName];
-                    if (member && handler.nsfw && !channel.nsfw) return interaction.followUp(`*Sorry! \`/${handler.id}\` can only be used in \`NSFW\` channels 😏*`, { ephemeral: true });
+                    const handler = allHandlers.filter(handler => handler.getConstructorChain(true).includes('Command')).find(handler => handler.id === interaction.commandName);
+                    if (handler && member && handler.nsfw && !channel.nsfw) return interaction.reply(`*Sorry! \`/${handler.id}\` can only be used in \`NSFW\` channels 😏*`, { ephemeral: true });
                     if (handler) return handler.onCommand(interaction).then(() => {
                         this.emit('log', `[${handler.id}](Handler) Command completed in ${Date.now() - interaction.createdTimestamp}ms`);
                     }).catch((error) => {
@@ -37,8 +37,10 @@ module.exports = (Client) => class extends Client {
                     return interaction.followUp(`Sorry! Command \`${interaction.commandName}\` is not currently implemented 🥴\n\nPossible reasons you see this message:\n - *Planned or WIP command*\n - *Removed due to stability issues*\n\n*Please contact bot owner for more details*`).catch(console.error);
                 }
                 case 'MessageComponentInteraction': {
-                    const handler = this.handlers.filter(handler => handler.getConstructorChain(true).includes('Component'))[interaction.customID.split(' ')[0]];
-                    if (member && handler.nsfw && !channel.nsfw) return interaction.followUp(`*Sorry! \`/${handler.id}\` can only be used in \`NSFW\` channels 😏*`, { ephemeral: true });
+                    const handerData = JSON.parse(interaction.customID);
+                    const handlerId = interaction.customID.split('-')[0]
+                    const handler = allHandlers.filter(handler => handler.getConstructorChain(true).includes('Component')).find(handler => handler.id === handerData.id)
+                    if (handler && member && handler.nsfw && !channel.nsfw) return interaction.reply(`*Sorry! \`/${handler.id}\` can only be used in \`NSFW\` channels 😏*`, { ephemeral: true });
                     if (handler) return handler.onComponent(interaction).then(() => {
                         this.emit('log', `[${handler.id}](Handler) Component completed in ${Date.now() - interaction.createdTimestamp}ms`);
                     }).catch((error) => {

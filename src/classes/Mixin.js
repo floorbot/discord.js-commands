@@ -8,6 +8,6 @@ const Handler = require('./Handler')
 module.exports = function() {
     const superclasses = [...arguments];
     const superclass = superclasses.pop();
-    if (superclasses.length) return superclass(Mixin(...superclasses));
+    if (superclasses.length) return superclass(module.exports(...superclasses));
     return superclass(Handler);
 }
