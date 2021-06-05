@@ -31,9 +31,16 @@ module.exports = class Handler extends Base {
     }
 
     /**
+     * setup - Called before a client has logged in to setup any dependencies
+     *
+     * @return {Boolean} Whether or not the handler "setup"
+     */
+    setup() { return null; }
+
+    /**
      * initialise - Called when a client reconnected or the application is starting up
      *
-     * @return {type}  description
+     * @return {Boolean} Whether or not the handler "initialised"
      */
     initialise() { return null; }
 

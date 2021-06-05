@@ -75,4 +75,10 @@ module.exports = (Client) => class extends Client {
                 });
         });
     }
+
+    login(token) {
+        return Object.values(this.handlers).reduce((promise, handler) => {
+            return promise.then(handler.setup())
+        }, Promise.resolve()).then(super.login(token))
+    }
 }
