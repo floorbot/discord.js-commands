@@ -34,7 +34,7 @@ module.exports = (Client) => class extends Client {
                         return interaction.followUp(`*Sorry! I seem to have run into an issue with \`/${handler.id}\` 😵*`);
                     }).catch(console.error);
                     this.emit('log', `[${interaction.commandName}] Not Implemented`);
-                    return interaction.followUp(`Sorry! Command \`${interaction.commandName}\` is not currently implemented 🥴\n\nPossible reasons you see this message:\n - *Planned or WIP command*\n - *Removed due to stability issues*\n\n*Please contact bot owner for more details*`).catch(console.error);
+                    return interaction.reply(`Sorry! Command \`${interaction.commandName}\` is not currently implemented 🥴\n\nPossible reasons you see this message:\n - *Planned or WIP command*\n - *Removed due to stability issues*\n\n*Please contact bot owner for more details*`).catch(console.error);
                 }
                 case 'MessageComponentInteraction': {
                     const handerData = JSON.parse(interaction.customID);
@@ -48,7 +48,7 @@ module.exports = (Client) => class extends Client {
                         return interaction.followUp(`*Sorry! I seem to have run into an issue with \`/${handler.id}\` 😵*`);
                     }).catch(console.error);
                     this.emit('log', `[${interaction.customID}] Not Implemented`);
-                    return interaction.followUp(`Sorry! Component \`${interaction.customID}\` is not currently implemented 🥴\n\nPossible reasons you see this message:\n - *Planned or WIP component*\n - *Removed due to stability issues*\n\n*Please contact bot owner for more details*`).catch(console.error);
+                    return interaction.reply(`Sorry! Component \`${interaction.customID}\` is not currently implemented 🥴\n\nPossible reasons you see this message:\n - *Planned or WIP component*\n - *Removed due to stability issues*\n\n*Please contact bot owner for more details*`).catch(console.error);
                 }
                 default:
                     return this.emit('log', `[Support] Unknown Interaction Type`, interaction);
