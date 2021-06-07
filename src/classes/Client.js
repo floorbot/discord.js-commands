@@ -81,7 +81,7 @@ module.exports = (Client) => class extends Client {
             return promise.then(handler.setup())
         }, Promise.resolve()).then(() => {
             return super.login(token).then(res => {
-                client.emit('log', `[server] Logged in as <${client.user.tag}>`)
+                this.emit('log', `[server] Logged in as <${this.user.tag}>`)
                 return res;
             })
         })
