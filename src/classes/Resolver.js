@@ -1,7 +1,7 @@
 const twemoji = require('twemoji');
 
 class Resolver {
-    static resolve(interaction, string, type, bot = true) {
+    static resolve(interaction, string = '', type, bot = true) {
         const { user, member, guild, client, channel } = interaction;
 
         if (!string.length) return {};
