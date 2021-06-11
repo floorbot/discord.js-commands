@@ -36,7 +36,7 @@ module.exports = (Client) => class extends Client {
                     this.emit('log', `[${interaction.commandName}] Not Implemented`);
                     return interaction.reply(`Sorry! Command \`${interaction.commandName}\` is not currently implemented 🥴\n\nPossible reasons you see this message:\n - *Planned or WIP command*\n - *Removed due to stability issues*\n\n*Please contact bot owner for more details*`).catch(console.error);
                 }
-                case 'MessageComponentInteraction': {
+                case 'ButtonInteraction': {
                     const handerData = JSON.parse(interaction.customID);
                     const handlerId = interaction.customID.split('-')[0]
                     const handler = allHandlers.filter(handler => handler.getConstructorChain(true).includes('Component')).find(handler => handler.id === handerData.id)
