@@ -8,14 +8,14 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/floorbot-js/discord.js-commands.git"
+        "url": "git+https://github.com/floorbot/discord.js-commands.git"
     },
     "author": "Arcadeena",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/floorbot-js/discord.js-commands/issues"
+        "url": "https://github.com/floorbot/discord.js-commands/issues"
     },
-    "homepage": "https://github.com/floorbot-js/discord.js-commands#readme",
+    "homepage": "https://github.com/floorbot/discord.js-commands#readme",
     "dependencies": {
         "async-exit-hook": "^2.0.1",
         "discord.js": "github:discordjs/discord.js",
