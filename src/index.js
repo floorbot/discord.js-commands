@@ -1,3 +1,5 @@
+require('dotenv-safe').config({ example: `${__dirname}/../.env.example` })
+
 module.exports = Discord => {
 
     Discord.Client = require('./classes/Client')(Discord.Client);
