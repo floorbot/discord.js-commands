@@ -24,6 +24,13 @@ module.exports = (Util) => class Newtil extends Util {
         });
     }
 
+    // Converts country code to emoji
+    static localeToEmoji(countryCode = 'AU') {
+        const firstLetter = String.fromCodePoint(countryCode.codePointAt(0) - 0x41 + 0x1F1E6);
+        const secondLetter = String.fromCodePoint(countryCode.codePointAt(1) - 0x41 + 0x1F1E6);
+        return `${firstLetter}${secondLetter}`
+    }
+
     // Useful number functions
     static formatDecimal(number, places = 1) { return (Number(number) || 0).toFixed(places).replace(/([0-9]+(\.[0-9]+[1-9])?)(\.?0+$)/, '$1'); }
     static formatCommas(string) { return string.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
