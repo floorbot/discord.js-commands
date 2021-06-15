@@ -1,4 +1,5 @@
-require('dotenv-safe').config({ example: `${__dirname}/../.env.example` })
+require('dotenv-safe').config({ example: `${__dirname}/../.env.example` });
+require('nconf').file({ file: `${__dirname}/../config.json` })
 
 module.exports = Discord => {
 
