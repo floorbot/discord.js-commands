@@ -19,7 +19,6 @@
     "dependencies": {
         "async-exit-hook": "^2.0.1",
         "discord.js": "github:discordjs/discord.js",
-        "dotenv-safe": "^8.2.0",
         "nconf": "^0.11.2",
         "twemoji": "^13.1.0"
     }

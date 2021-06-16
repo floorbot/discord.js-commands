@@ -1,4 +1,3 @@
-require('dotenv-safe').config({ example: `${__dirname}/../.env.example` });
 require('nconf').file({ file: `${__dirname}/../config.json` })
 
 module.exports = Discord => {
@@ -10,8 +9,8 @@ module.exports = Discord => {
     Discord.Mixin = require('./classes/Mixin');
 
     Object.assign(Discord.Mixin, {
-        Component: require('./classes/mixins/Component'),
         Command: require('./classes/mixins/Command'),
+        Button: require('./classes/mixins/Button'),
         Regex: require('./classes/mixins/Regex')
     });
 

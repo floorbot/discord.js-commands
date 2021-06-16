@@ -5,7 +5,7 @@ A small library for discord.js to add command uniformity with interactions
 #### Installation
 
 ```bash
-npm install github:floorbot-js/discord.js-commands
+npm install github:floorbot/discord.js-commands
 ```
 
 #### Example
@@ -15,13 +15,9 @@ const Discord = require('discord.js-commands')(require('discord.js'));
 const client = new Discord.Client({
     token: '<bot token>',
     publicKey: '<bot public key>',
+    intents: Discord.Intents.ALL,
 
-    handlers: {
-        tasks: [ /** TODO EXAMPLES **/ ],
-        commands: [ /** TODO EXAMPLES **/ ],
-        components: [ /** TODO EXAMPLES **/ ],
-        regexes: [ /** TODO EXAMPLES **/ ]
-    }
+    handlers: { /** TODO EXAMPLES **/ }
 });
 
 client.on('log', (string, object) => { console.log(string, object || '') });
@@ -32,5 +28,5 @@ client.login();
 #### Disclaimer
 
 This is still a work in progress...
-discord.js does not officially support a lot of the lastest discord features. This has resulted in using various frequently changing draft pull requests.
+discord.js does not officially support a lot of the latest discord features. This has resulted in using various frequently changing draft pull requests.
 This also means the discord.js dependency changes at a moments notice and will keep changing until these features are officially implemented.

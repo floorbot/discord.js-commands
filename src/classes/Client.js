@@ -37,18 +37,17 @@ module.exports = (Client) => class extends Client {
                     return interaction.reply(`Sorry! Command \`${interaction.commandName}\` is not currently implemented 🥴\n\nPossible reasons you see this message:\n - *Planned or WIP command*\n - *Removed due to stability issues*\n\n*Please contact bot owner for more details*`).catch(console.error);
                 }
                 case 'ButtonInteraction': {
-                    const handerData = JSON.parse(interaction.customID);
-                    const handlerId = interaction.customID.split('-')[0]
-                    const handler = allHandlers.filter(handler => handler.getConstructorChain(true).includes('Component')).find(handler => handler.id === handerData.id)
+                    interaction.customData = JSON.parse(interaction.customID);
+                    const handler = allHandlers.filter(handler => handler.getConstructorChain(true).includes('Button')).find(handler => handler.id === interaction.customData.id)
                     if (handler && member && handler.nsfw && !channel.nsfw) return interaction.reply(`*Sorry! \`/${handler.id}\` can only be used in \`NSFW\` channels 😏*`, { ephemeral: true });
-                    if (handler) return handler.onComponent(interaction).then(() => {
-                        this.emit('log', `[${handler.id}](Handler) Component completed in ${Date.now() - interaction.createdTimestamp}ms`);
+                    if (handler) return handler.onButton(interaction).then(() => {
+                        this.emit('log', `[${handler.id}](Handler) Button completed in ${Date.now() - interaction.createdTimestamp}ms`);
                     }).catch((error) => {
                         this.emit('log', `[${handler.id}] Failed to execute correctly`, error);
                         return interaction.followUp(`*Sorry! I seem to have run into an issue with \`/${handler.id}\` 😵*`);
                     }).catch(console.error);
                     this.emit('log', `[${interaction.customID}] Not Implemented`);
-                    return interaction.reply(`Sorry! Component \`${interaction.customID}\` is not currently implemented 🥴\n\nPossible reasons you see this message:\n - *Planned or WIP component*\n - *Removed due to stability issues*\n\n*Please contact bot owner for more details*`).catch(console.error);
+                    return interaction.reply(`Sorry! Button \`${interaction.customID}\` is not currently implemented 🥴\n\nPossible reasons you see this message:\n - *Planned or WIP Button*\n - *Removed due to stability issues*\n\n*Please contact bot owner for more details*`).catch(console.error);
                 }
                 default:
                     return this.emit('log', `[Support] Unknown Interaction Type`, interaction);
