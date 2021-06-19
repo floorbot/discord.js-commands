@@ -10,18 +10,18 @@ npm install github:floorbot/discord.js-commands
 
 #### Example
 
-```js
-const Discord = require('discord.js-commands')(require('discord.js'));
-const client = new Discord.Client({
+```ts
+import { CommandClient } from 'discord.js-commands';
+
+const client = new CommandClient({
     token: '<bot token>',
     publicKey: '<bot public key>',
     intents: Discord.Intents.ALL,
 
-    handlers: { /** TODO EXAMPLES **/ }
+    handlers: /** TODO EXAMPLES **/
 });
 
 client.on('log', (string, object) => { console.log(string, object || '') });
-client.on('ready', () => client.emit('log', `[SETUP] Logged in as <${client.user.tag}>`));
 client.login();
 ```
 
