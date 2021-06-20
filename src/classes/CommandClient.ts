@@ -3,7 +3,7 @@ import { BaseHandler, BaseHandlerOptions } from './BaseHandler';
 import { isCommandHandler } from '../interfaces/CommandHandler';
 import { isButtonHandler } from '../interfaces/ButtonHandler';
 import { isRegexHandler } from '../interfaces/RegexHandler';
-import { exitHook } from 'async-exit-hook';
+import * as exitHook from 'async-exit-hook';
 const { Events } = Constants;
 
 export class CommandClient extends Client {
@@ -123,7 +123,9 @@ export class CommandClient extends Client {
 
     public async login(token?: string): Promise<string> {
         const handlers = Array.from(this.handlers.values());
-        for (const handler of handlers) { await handler.setup() }
+        for (const handler of handlers) {
+            if (await handler.setup()) this.emit('log', `[setup][handler:${handler.id}] Handler setup complete`);
+        }
         return super.login(token).then((string: string) => {
             this.emit('log', `[client] Logged in as <${this.user.tag}>`)
             return string;
@@ -131,7 +133,7 @@ export class CommandClient extends Client {
     }
 
     private onShardReady(id: number, unavailableGuilds: Set<string>): void {
-        this.emit('log', `[shard:${id}][SHARD_READY] Shard Ready with ${unavailableGuilds.size} unavailable guilds`);
+        this.emit('log', `[shard:${id}][SHARD_READY] Shard Ready with ${unavailableGuilds ? unavailableGuilds.size : 0} unavailable guilds`);
         this.handlers.each((handler: BaseHandler) => {
             const initialise: Promise<void> = handler.initialise();
             if (initialise) initialise.then(() => {

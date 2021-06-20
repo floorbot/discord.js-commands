@@ -1,8 +1,9 @@
 import { Util, Collection, User, Guild, GuildMember, TextChannel, DMChannel, Role, Interaction, Message } from 'discord.js';
-import twemoji = require('twemoji');
+import * as twemoji from 'twemoji';
 
 declare module 'discord.js' {
     export namespace Util {
+        export function toFahrenheit(degrees: number): number;
         export function resolveEmoji(string: string): string;
         export function resolveRole(context: Interaction | Message, string: string): Role;
         export function resolveUser(context: Interaction | Message, string: string, allowBot?: boolean): User;
@@ -18,8 +19,12 @@ declare module 'discord.js' {
         export function formatString(string: string, fill: Array<string>): string;
         export function formatDecimal(number: number, significance?: number): string;
         export function formatCommas(number: number): string;
-        export function formatDate(date: Date | string, options?: FormatDateOptions): string;
+        export function formatDate(date: Date | number, options?: FormatDateOptions): string;
     }
+}
+
+Util.toFahrenheit = function(degrees: number): number {
+    return Math.round((degrees) * 9 / 5 + 32);
 }
 
 Util.resolveEmoji = function(string: string): string {
@@ -130,7 +135,7 @@ Util.formatCommas = function(number: number): string {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
-Util.formatDate = function(date: Date | string, options: FormatDateOptions = {}): string {
+Util.formatDate = function(date: Date | number, options: FormatDateOptions = {}): string {
     date = date instanceof Date ? date : new Date(date);
     options = Object.assign({
         showTime: false,

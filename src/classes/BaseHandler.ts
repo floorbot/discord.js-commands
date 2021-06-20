@@ -15,14 +15,14 @@ export class BaseHandler {
         this.nsfw = options.nsfw;
     }
 
-    public setup(): Promise<void> | null { return null }
-    public initialise(): Promise<void> | null { return null }
-    public finalise(): Promise<void> | null { return null }
+    public setup(): Promise<any> | null { return null }
+    public initialise(): Promise<any> | null { return null }
+    public finalise(): Promise<any> | null { return null }
 
     public getEmbedTemplate(context: Message | Interaction, data?: MessageEmbedOptions): MessageEmbed {
         const member = <GuildMember>context.member;
         return new MessageEmbed(data)
-            .setColor(data.color || member.displayColor || 14840969);
+            .setColor(member.displayColor || 14840969);
     }
 }
 
