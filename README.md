@@ -14,15 +14,12 @@ npm install github:floorbot/discord.js-commands
 import { CommandClient } from 'discord.js-commands';
 
 const client = new CommandClient({
-    token: '<bot token>',
-    publicKey: '<bot public key>',
     intents: Discord.Intents.ALL,
-
     handlers: /** TODO EXAMPLES **/
 });
 
 client.on('log', (string, object) => { console.log(string, object || '') });
-client.login();
+client.login('<bot token>');
 ```
 
 #### Disclaimer
