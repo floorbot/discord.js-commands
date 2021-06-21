@@ -100,7 +100,7 @@ export class CommandClient extends Client {
     }
 
 
-    private onMessageCreate(message: Message): void {
+    private async onMessageCreate(message: Message): Promise<void> {
         this.handlers.each((handler: BaseHandler) => {
             if (isRegexHandler(handler)) {
                 const matches = handler.regex.exec(message.content);

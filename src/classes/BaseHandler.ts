@@ -1,13 +1,14 @@
-import { Client, Message, Interaction, MessageEmbedOptions, MessageEmbed, GuildMember } from 'discord.js';
+import { Message, Interaction, MessageEmbedOptions, MessageEmbed, GuildMember } from 'discord.js';
+import { CommandClient } from './CommandClient';
 
 export class BaseHandler {
-    public readonly client: Client;
+    public readonly client: CommandClient;
     public readonly id: string;
     public readonly name: string;
     public readonly group: string;
     public readonly nsfw: boolean;
 
-    constructor(client: Client, options: BaseHandlerOptions) {
+    constructor(client: CommandClient, options: BaseHandlerOptions) {
         this.client = client;
         this.id = options.id;
         this.name = options.name;
