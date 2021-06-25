@@ -20,7 +20,7 @@ export class BaseHandler {
     public initialise(): Promise<any> | null { return null }
     public finalise(): Promise<any> | null { return null }
 
-    public getEmbedTemplate(context: Message | Interaction, data?: MessageEmbedOptions): MessageEmbed {
+    public getEmbedTemplate(context: HandlerContext, data?: MessageEmbedOptions): MessageEmbed {
         const member = <GuildMember>context.member;
         return new MessageEmbed(data)
             .setColor(member.displayColor || 14840969);
@@ -33,3 +33,5 @@ export interface BaseHandlerOptions {
     readonly group: string;
     readonly nsfw: boolean;
 }
+
+export type HandlerContext = Interaction | Message;

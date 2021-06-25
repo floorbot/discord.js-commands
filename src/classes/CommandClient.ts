@@ -107,6 +107,7 @@ export class CommandClient extends Client {
                 if (matches) {
                     const { channel, guild } = message;
                     if (channel instanceof TextChannel) {
+                        if (!guild || !guild.me) return;
                         if (!channel.permissionsFor(guild.me).has('SEND_MESSAGES')) return;
                         if (handler.nsfw && !channel.nsfw) return;
                         return handler.onRegex(message, matches[1]).catch((error) => {
@@ -127,15 +128,15 @@ export class CommandClient extends Client {
             if (await handler.setup()) this.emit('log', `[setup][handler:${handler.id}] Handler setup complete`);
         }
         return super.login(token).then((string: string) => {
-            this.emit('log', `[client] Logged in as <${this.user.tag}>`)
+            this.emit('log', `[client] Logged in as <${this.user!.tag}>`)
             return string;
         });
     }
 
-    private onShardReady(id: number, unavailableGuilds: Set<string>): void {
+    private onShardReady(id: number, unavailableGuilds: Set<string> | undefined): void {
         this.emit('log', `[shard:${id}][SHARD_READY] Shard Ready with ${unavailableGuilds ? unavailableGuilds.size : 0} unavailable guilds`);
         this.handlers.each((handler: BaseHandler) => {
-            const initialise: Promise<void> = handler.initialise();
+            const initialise: Promise<any> | null = handler.initialise();
             if (initialise) initialise.then(() => {
                 this.emit('log', `[shard:${id}][handler:${handler.id}] Initialised {Shard Ready}`);
             });
@@ -145,7 +146,7 @@ export class CommandClient extends Client {
     private onShardResume(id: number, replayedEvents: number): void {
         this.emit('log', `[shard:${id}][SHARD_RESUME] Shard Resumed with ${replayedEvents} replayed events`);
         this.handlers.each((handler: BaseHandler) => {
-            const initialise: Promise<void> = handler.initialise();
+            const initialise: Promise<any> | null = handler.initialise();
             if (initialise) initialise.then(() => {
                 this.emit('log', `[shard:${id}][handler:${handler.id}] Initialised {Shard Resume}`);
             });
@@ -155,7 +156,7 @@ export class CommandClient extends Client {
     private onShardDisconnect(event: CloseEvent, id: number): void {
         this.emit('log', `[shard:${id}][SHARD_DISCONNECT] Shard disconnected`, event);
         this.handlers.each((handler: BaseHandler) => {
-            const finalise: Promise<void> = handler.finalise();
+            const finalise: Promise<any> | null = handler.finalise();
             if (finalise) finalise.then(() => {
                 this.emit('log', `[shard:${id}][handler:${handler.id}] Finalised {Shard Disconnect}`);
             });
@@ -165,7 +166,7 @@ export class CommandClient extends Client {
     private onShardError(error: Error, id: number): void {
         this.emit('log', `[shard:${id}][SHARD_ERROR] Shard encountered an error`, error);
         this.handlers.each((handler: BaseHandler) => {
-            const finalise: Promise<void> = handler.finalise();
+            const finalise: Promise<any> | null = handler.finalise();
             if (finalise) finalise.then(() => {
                 this.emit('log', `[shard:${id}][handler:${handler.id}] Finalised {Shard Error}`);
             });
@@ -175,7 +176,7 @@ export class CommandClient extends Client {
     private onExitHook(): void {
         this.emit('log', '[EXIT_HOOK] Finalising all handlers before exiting');
         this.handlers.each((handler: BaseHandler) => {
-            const finalise: Promise<void> = handler.finalise();
+            const finalise: Promise<any> | null = handler.finalise();
             if (finalise) finalise.then(() => {
                 this.emit('log', `[EXIT_HOOK][handler:${handler.id}] Finalised {Exit Hook}`);
             });

@@ -2,7 +2,7 @@
     "name": "discord.js-commands",
     "version": "1.0.0",
     "description": "A small library for discord.js to add command uniformity with interactions",
-    "main": "src/index.ts",
+    "main": "./src/index.ts",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
@@ -17,6 +17,7 @@
     },
     "homepage": "https://github.com/floorbot/discord.js-commands#readme",
     "dependencies": {
+        "@types/twemoji": "^12.1.1",
         "async-exit-hook": "^2.0.1",
         "discord.js": "github:discordjs/discord.js",
         "twemoji": "^13.1.0"
