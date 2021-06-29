@@ -86,7 +86,7 @@ Util.resolveMember = function(context: HandlerContext, string: string, allowBot:
 }
 
 Util.localeToEmoji = function(countryCode: string): string | null {
-    if (!countryCode.codePointAt(0) || countryCode.codePointAt(1)) return null;
+    if (!countryCode.codePointAt(0) || !countryCode.codePointAt(1)) return null;
     const firstLetter: string = String.fromCodePoint(countryCode.codePointAt(0)! - 0x41 + 0x1F1E6);
     const secondLetter: string = String.fromCodePoint(countryCode.codePointAt(1)! - 0x41 + 0x1F1E6);
     return `${firstLetter}${secondLetter}`

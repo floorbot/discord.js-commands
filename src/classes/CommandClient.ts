@@ -3,8 +3,10 @@ import { BaseHandler, BaseHandlerOptions } from './BaseHandler';
 import { isCommandHandler } from '../interfaces/CommandHandler';
 import { isButtonHandler } from '../interfaces/ButtonHandler';
 import { isRegexHandler } from '../interfaces/RegexHandler';
-import * as exitHook from 'async-exit-hook';
 const { Events } = Constants;
+
+// @ts-ignore
+import * as exitHook from 'async-exit-hook';
 
 export class CommandClient extends Client {
 
