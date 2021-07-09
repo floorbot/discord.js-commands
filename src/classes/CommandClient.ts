@@ -117,7 +117,7 @@ export class CommandClient extends Client {
             }
 
             return handler.onSelectMenu(interaction, customData).then(() => {
-                this.emit('log', `[handler:${handler.id}](button) Button completed in ${Date.now() - interaction.createdTimestamp}ms`);
+                this.emit('log', `[handler:${handler.id}](selectmenu) Button completed in ${Date.now() - interaction.createdTimestamp}ms`);
             }).catch(error => {
                 this.emit('log', `[handler:${handler.id}] Failed to execute correctly`, error);
                 const embed = this.getErrorEmbed(handler, error);
@@ -152,16 +152,16 @@ export class CommandClient extends Client {
     public async login(token?: string): Promise<string> {
         const handlers = Array.from(this.handlers.values());
         for (const handler of handlers) {
-            if (await handler.setup()) this.emit('log', `[setup][handler:${handler.id}] Handler setup complete`);
+            if (await handler.setup()) this.emit('log', `[login](${handler.id}) Handler setup complete`);
         }
         return super.login(token).then((string: string) => {
-            this.emit('log', `[client] Logged in as <${this.user!.tag}>`)
+            this.emit('log', `[login] Logged in as <${this.user!.tag}>`)
             return string;
         });
     }
 
     private onShardReady(id: number, unavailableGuilds: Set<string> | undefined): void {
-        this.emit('log', `[shard:${id}][SHARD_READY] Shard Ready with ${unavailableGuilds ? unavailableGuilds.size : 0} unavailable guilds`);
+        this.emit('log', `[Shard](ready) Shard ${id} ready with ${unavailableGuilds ? unavailableGuilds.size : 0} unavailable guilds`);
         this.handlers.each((handler: BaseHandler) => {
             const initialise: Promise<any> | null = handler.initialise();
             if (initialise) initialise.then(() => {
@@ -171,7 +171,7 @@ export class CommandClient extends Client {
     }
 
     private onShardResume(id: number, replayedEvents: number): void {
-        this.emit('log', `[shard:${id}][SHARD_RESUME] Shard Resumed with ${replayedEvents} replayed events`);
+        this.emit('log', `[Shard](resume) Shard ${id} resumed with ${replayedEvents} replayed events`);
         this.handlers.each((handler: BaseHandler) => {
             const initialise: Promise<any> | null = handler.initialise();
             if (initialise) initialise.then(() => {
@@ -181,7 +181,7 @@ export class CommandClient extends Client {
     }
 
     private onShardDisconnect(event: CloseEvent, id: number): void {
-        this.emit('log', `[shard:${id}][SHARD_DISCONNECT] Shard disconnected`, event);
+        this.emit('log', `[Shard](disconnect) Shard ${id} disconnected`, event);
         this.handlers.each((handler: BaseHandler) => {
             const finalise: Promise<any> | null = handler.finalise();
             if (finalise) finalise.then(() => {
@@ -191,7 +191,7 @@ export class CommandClient extends Client {
     }
 
     private onShardError(error: Error, id: number): void {
-        this.emit('log', `[shard:${id}][SHARD_ERROR] Shard encountered an error`, error);
+        this.emit('log', `[Shard]error Shard ${id} encountered an error`, error);
         this.handlers.each((handler: BaseHandler) => {
             const finalise: Promise<any> | null = handler.finalise();
             if (finalise) finalise.then(() => {
@@ -201,7 +201,7 @@ export class CommandClient extends Client {
     }
 
     private onExitHook(): void {
-        this.emit('log', '[EXIT_HOOK] Finalising all handlers before exiting');
+        this.emit('log', '[SYSTEM](EXIT_HOOK) Finalising all handlers before exiting');
         this.handlers.each((handler: BaseHandler) => {
             const finalise: Promise<any> | null = handler.finalise();
             if (finalise) finalise.then(() => {
