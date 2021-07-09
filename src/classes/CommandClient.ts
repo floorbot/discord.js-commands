@@ -1,13 +1,13 @@
 import { Client, ClientOptions, Collection, Constants, CloseEvent, Message, Interaction, CommandInteraction, ButtonInteraction, SelectMenuInteraction, TextChannel, MessageEmbed } from 'discord.js';
 import { BaseHandler, BaseHandlerOptions } from './BaseHandler';
-import { isSelectMenuHandler } from '../interfaces/SelectMenuHandler';
-import { isCommandHandler } from '../interfaces/CommandHandler';
-import { isButtonHandler } from '../interfaces/ButtonHandler';
-import { isRegexHandler } from '../interfaces/RegexHandler';
 const { Events } = Constants;
 
 // @ts-ignore
 import * as exitHook from 'async-exit-hook';
+
+export interface ComponentCustomData {
+    readonly id: string
+}
 
 export class CommandClient extends Client {
 
@@ -57,7 +57,7 @@ export class CommandClient extends Client {
         if (interaction instanceof CommandInteraction) {
             const handler = this.handlers.get(interaction.commandName);
 
-            if (!handler || !isCommandHandler(handler)) {
+            if (!handler || !handler.isCommandHandler()) {
                 const embed = this.getUnsupportedEmbed(interaction.commandName);
                 return interaction.reply({ embeds: [embed], ephemeral: false }).catch(console.error);
             }
@@ -78,10 +78,10 @@ export class CommandClient extends Client {
         }
 
         if (interaction instanceof ButtonInteraction) {
-            const customData = JSON.parse(interaction.customId);
+            const customData: ComponentCustomData = JSON.parse(interaction.customId);
             const handler = this.handlers.get(customData.id);
 
-            if (!handler || !isButtonHandler(handler)) {
+            if (!handler || !handler.isButtonHandler()) {
                 const embed = this.getUnsupportedEmbed(customData.id);
                 return interaction.reply({ embeds: [embed], ephemeral: false }).catch(console.error);
             }
@@ -102,10 +102,10 @@ export class CommandClient extends Client {
         }
 
         if (interaction instanceof SelectMenuInteraction) {
-            const customData = JSON.parse(interaction.customId);
+            const customData: ComponentCustomData = JSON.parse(interaction.customId);
             const handler = this.handlers.get(customData.id);
 
-            if (!handler || !isSelectMenuHandler(handler)) {
+            if (!handler || !handler.isSelectMenuHandler()) {
                 const embed = this.getUnsupportedEmbed(customData.id);
                 return interaction.reply({ embeds: [embed], ephemeral: false }).catch(console.error);
             }
@@ -129,7 +129,7 @@ export class CommandClient extends Client {
 
     private async onMessageCreate(message: Message): Promise<void> {
         this.handlers.each((handler: BaseHandler) => {
-            if (isRegexHandler(handler)) {
+            if (handler.isRegexHandler()) {
                 const matches = handler.regex.exec(message.content);
                 if (matches) {
                     const { channel, guild } = message;

@@ -1,4 +1,8 @@
 import { Message, Interaction, MessageEmbedOptions, MessageEmbed, GuildMember } from 'discord.js';
+import { CommandHandler } from '../interfaces/CommandHandler';
+import { SelectMenuHandler } from '../interfaces/SelectMenuHandler';
+import { RegexHandler } from '../interfaces/RegexHandler';
+import { ButtonHandler } from '../interfaces/ButtonHandler';
 import { CommandClient } from './CommandClient';
 
 export class BaseHandler {
@@ -25,7 +29,14 @@ export class BaseHandler {
         return new MessageEmbed(data)
             .setColor(member.displayColor || 14840969);
     }
+
+    public isSelectMenuHandler(): this is SelectMenuHandler { return 'onSelectMenu' in this }
+    public isCommandHandler(): this is CommandHandler { return 'onCommand' in this }
+    public isButtonHandler(): this is ButtonHandler { return 'onButton' in this }
+    public isRegexHandler(): this is RegexHandler { return 'onRegex' in this }
 }
+
+
 
 export interface BaseHandlerOptions {
     readonly id: string;
