@@ -69,9 +69,9 @@ export class CommandClient extends Client {
             }
 
             return handler.onCommand(interaction).then(() => {
-                this.emit('log', `[handler:${handler.id}](command) Command completed in ${Date.now() - interaction.createdTimestamp}ms`);
+                this.emit('log', `[${handler.id}](command) Command completed in ${Date.now() - interaction.createdTimestamp}ms`);
             }).catch(error => {
-                this.emit('log', `[handler:${handler.id}] Failed to execute correctly`, error);
+                this.emit('log', `[${handler.id}](command) Failed to execute correctly`, error);
                 const embed = this.getErrorEmbed(handler, error);
                 return interaction.followUp({ embeds: [embed], ephemeral: false });
             }).catch(console.error);
@@ -93,9 +93,9 @@ export class CommandClient extends Client {
             }
 
             return handler.onButton(interaction, customData).then(() => {
-                this.emit('log', `[handler:${handler.id}](button) Button completed in ${Date.now() - interaction.createdTimestamp}ms`);
+                this.emit('log', `[${handler.id}](button) Button completed in ${Date.now() - interaction.createdTimestamp}ms`);
             }).catch(error => {
-                this.emit('log', `[handler:${handler.id}] Failed to execute correctly`, error);
+                this.emit('log', `[${handler.id}](button) Failed to execute correctly`, error);
                 const embed = this.getErrorEmbed(handler, error);
                 return interaction.followUp({ embeds: [embed], ephemeral: false });
             }).catch(console.error);
@@ -117,9 +117,9 @@ export class CommandClient extends Client {
             }
 
             return handler.onSelectMenu(interaction, customData).then(() => {
-                this.emit('log', `[handler:${handler.id}](selectmenu) Button completed in ${Date.now() - interaction.createdTimestamp}ms`);
+                this.emit('log', `[${handler.id}](selectmenu) Button completed in ${Date.now() - interaction.createdTimestamp}ms`);
             }).catch(error => {
-                this.emit('log', `[handler:${handler.id}] Failed to execute correctly`, error);
+                this.emit('log', `[${handler.id}](selectmenu) Failed to execute correctly`, error);
                 const embed = this.getErrorEmbed(handler, error);
                 return interaction.followUp({ embeds: [embed], ephemeral: false });
             }).catch(console.error);
@@ -138,10 +138,10 @@ export class CommandClient extends Client {
                         if (!channel.permissionsFor(guild.me).has('SEND_MESSAGES')) return;
                         if (handler.nsfw && !channel.nsfw) return;
                         return handler.onRegex(message, matches[1]).catch((error) => {
-                            this.emit('log', `[handler:${handler.id}] Failed to regexecute correctly`, error);
+                            this.emit('log', `[${handler.id}](regex) Failed to regexecute correctly`, error);
                             return message.reply(`*Sorry! I seem to have run into an issue with \`/${handler.id}\` 😵*`);
                         }).finally(() => {
-                            this.emit('log', `[handler:${handler.id}](regex) Command completed in ${Date.now() - message.createdTimestamp}ms`);
+                            this.emit('log', `[${handler.id}](regex) Command completed in ${Date.now() - message.createdTimestamp}ms`);
                         });
                     }
                 }
@@ -161,41 +161,41 @@ export class CommandClient extends Client {
     }
 
     private onShardReady(id: number, unavailableGuilds: Set<string> | undefined): void {
-        this.emit('log', `[Shard](ready) Shard ${id} ready with ${unavailableGuilds ? unavailableGuilds.size : 0} unavailable guilds`);
+        this.emit('log', `[shard](ready) Shard ${id} ready with ${unavailableGuilds ? unavailableGuilds.size : 0} unavailable guilds`);
         this.handlers.each((handler: BaseHandler) => {
             const initialise: Promise<any> | null = handler.initialise();
             if (initialise) initialise.then(() => {
-                this.emit('log', `[shard:${id}][handler:${handler.id}] Initialised {Shard Ready}`);
+                this.emit('log', `[shard](ready)(${handler.id}) Initialised after ready`);
             });
         });
     }
 
     private onShardResume(id: number, replayedEvents: number): void {
-        this.emit('log', `[Shard](resume) Shard ${id} resumed with ${replayedEvents} replayed events`);
+        this.emit('log', `[shard](resume) Shard ${id} resumed with ${replayedEvents} replayed events`);
         this.handlers.each((handler: BaseHandler) => {
             const initialise: Promise<any> | null = handler.initialise();
             if (initialise) initialise.then(() => {
-                this.emit('log', `[shard:${id}][handler:${handler.id}] Initialised {Shard Resume}`);
+                this.emit('log', `[shard](resume)(${handler.id}) Initialised after resume`);
             });
         });
     }
 
     private onShardDisconnect(event: CloseEvent, id: number): void {
-        this.emit('log', `[Shard](disconnect) Shard ${id} disconnected`, event);
+        this.emit('log', `[shard](disconnect) Shard ${id} disconnected`, event);
         this.handlers.each((handler: BaseHandler) => {
             const finalise: Promise<any> | null = handler.finalise();
             if (finalise) finalise.then(() => {
-                this.emit('log', `[shard:${id}][handler:${handler.id}] Finalised {Shard Disconnect}`);
+                this.emit('log', `[shard](disconnect)(${handler.id}) Finalised after disconnect`);
             });
         });
     }
 
     private onShardError(error: Error, id: number): void {
-        this.emit('log', `[Shard]error Shard ${id} encountered an error`, error);
+        this.emit('log', `[shard](error) Shard ${id} encountered an error`, error);
         this.handlers.each((handler: BaseHandler) => {
             const finalise: Promise<any> | null = handler.finalise();
             if (finalise) finalise.then(() => {
-                this.emit('log', `[shard:${id}][handler:${handler.id}] Finalised {Shard Error}`);
+                this.emit('log', `[shard](error)(${handler.id}) Finalised after error`);
             });
         });
     }
@@ -205,7 +205,7 @@ export class CommandClient extends Client {
         this.handlers.each((handler: BaseHandler) => {
             const finalise: Promise<any> | null = handler.finalise();
             if (finalise) finalise.then(() => {
-                this.emit('log', `[EXIT_HOOK][handler:${handler.id}] Finalised {Exit Hook}`);
+                this.emit('log', `[SYSTEM](EXIT_HOOK)(${handler.id}) Finalised {Exit Hook}`);
             });
         });
     }
