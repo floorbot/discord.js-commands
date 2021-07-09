@@ -2,10 +2,10 @@ import { BaseHandler } from '../classes/BaseHandler';
 import { SelectMenuInteraction } from 'discord.js';
 
 export interface SelectMenuHandler extends BaseHandler {
-    onSelectMenu<T>(interaction: SelectMenuInteraction, customData: ButtonCustomData): Promise<T>;
+    onSelectMenu<T>(interaction: SelectMenuInteraction, customData: SelectMenuCustomData): Promise<T>;
 }
 
-export interface ButtonCustomData {
+export interface SelectMenuCustomData {
     readonly id: string
 }
 
