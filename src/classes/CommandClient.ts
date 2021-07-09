@@ -1,5 +1,6 @@
-import { Client, ClientOptions, Collection, Constants, CloseEvent, Message, Interaction, CommandInteraction, ButtonInteraction, TextChannel, MessageEmbed } from 'discord.js';
+import { Client, ClientOptions, Collection, Constants, CloseEvent, Message, Interaction, CommandInteraction, ButtonInteraction, SelectMenuInteraction, TextChannel, MessageEmbed } from 'discord.js';
 import { BaseHandler, BaseHandlerOptions } from './BaseHandler';
+import { isSelectMenuHandler } from '../interfaces/SelectMenuHandler';
 import { isCommandHandler } from '../interfaces/CommandHandler';
 import { isButtonHandler } from '../interfaces/ButtonHandler';
 import { isRegexHandler } from '../interfaces/RegexHandler';
@@ -77,7 +78,7 @@ export class CommandClient extends Client {
         }
 
         if (interaction instanceof ButtonInteraction) {
-            const customData = JSON.parse(interaction.customID);
+            const customData = JSON.parse(interaction.customId);
             const handler = this.handlers.get(customData.id);
 
             if (!handler || !isButtonHandler(handler)) {
@@ -92,6 +93,30 @@ export class CommandClient extends Client {
             }
 
             return handler.onButton(interaction, customData).then(() => {
+                this.emit('log', `[handler:${handler.id}](button) Button completed in ${Date.now() - interaction.createdTimestamp}ms`);
+            }).catch(error => {
+                this.emit('log', `[handler:${handler.id}] Failed to execute correctly`, error);
+                const embed = this.getErrorEmbed(handler, error);
+                return interaction.followUp({ embeds: [embed], ephemeral: false });
+            }).catch(console.error);
+        }
+
+        if (interaction instanceof SelectMenuInteraction) {
+            const customData = JSON.parse(interaction.customId);
+            const handler = this.handlers.get(customData.id);
+
+            if (!handler || !isSelectMenuHandler(handler)) {
+                const embed = this.getUnsupportedEmbed(customData.id);
+                return interaction.reply({ embeds: [embed], ephemeral: false }).catch(console.error);
+            }
+
+            if (channel instanceof TextChannel && !channel.nsfw && handler.nsfw) {
+                const embed = handler.getEmbedTemplate(interaction)
+                    .setDescription(`*Sorry! \`/${handler.id}\` buttons can only be used in \`NSFW\` channels 😏*`);
+                return interaction.reply({ embeds: [embed], ephemeral: true }).catch(console.error);
+            }
+
+            return handler.onSelectMenu(interaction, customData).then(() => {
                 this.emit('log', `[handler:${handler.id}](button) Button completed in ${Date.now() - interaction.createdTimestamp}ms`);
             }).catch(error => {
                 this.emit('log', `[handler:${handler.id}] Failed to execute correctly`, error);
