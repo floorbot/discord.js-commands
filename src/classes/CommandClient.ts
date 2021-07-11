@@ -26,7 +26,7 @@ export class CommandClient extends Client {
         this.on(Events.SHARD_RESUME, this.onShardResume);
         this.on(Events.SHARD_DISCONNECT, this.onShardDisconnect);
         this.on(Events.SHARD_ERROR, this.onShardError);
-        exitHook(this.onExitHook);
+        exitHook(() => this.onExitHook);
 
         this.on(Events.INTERACTION_CREATE, this.onInteractionCreate);
         this.on(Events.MESSAGE_CREATE, this.onMessageCreate);

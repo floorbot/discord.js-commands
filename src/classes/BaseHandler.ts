@@ -64,7 +64,7 @@ export class BaseHandler {
     }
 
     public isAdmin(member: GuildMember) {
-        return member && !member.permissions.has(Permissions.FLAGS.ADMINISTRATOR) || member;
+        return member && member.permissions.has(Permissions.FLAGS.ADMINISTRATOR);
     }
 }
 
