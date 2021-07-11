@@ -1,4 +1,4 @@
-import './augmenters/Util'
+import './augmenters/Util';
 
 export { FormatDateOptions } from './augmenters/Util';
 
