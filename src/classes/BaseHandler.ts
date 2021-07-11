@@ -1,4 +1,4 @@
-import { Message, Interaction, MessageEmbedOptions, MessageEmbed, GuildMember, Guild, ApplicationCommand, Permissions, CommandInteraction, ButtonInteraction, SelectMenuInteraction } from 'discord.js';
+import { Message, MessageEmbedOptions, MessageEmbed, GuildMember, Guild, ApplicationCommand, Permissions, CommandInteraction, ButtonInteraction, SelectMenuInteraction } from 'discord.js';
 import { CommandEventHandler } from '../interfaces/CommandEventHandler';
 import { SelectMenuHandler } from '../interfaces/SelectMenuHandler';
 import { CommandHandler } from '../interfaces/CommandHandler';
@@ -50,16 +50,16 @@ export class BaseHandler {
         return Boolean(await this.fetchCommand(guild));
     }
 
-    public async enable(context: HandlerContext, guild?: Guild): Promise<ApplicationCommand | null> {
+    public async enable(context: HandlerContext): Promise<ApplicationCommand | null> {
         if (!this.isCommandHandler()) return null;
-        const found = await this.fetchCommand(guild);
-        if (guild) return found || guild.commands.create(this.commandData);
+        const found = await this.fetchCommand(context.guild!);
+        if (context.guild) return found || context.guild.commands.create(this.commandData);
         else return this.client.application!.commands.create(this.commandData);
     }
 
-    public async disable(context: HandlerContext, guild?: Guild): Promise<ApplicationCommand | null> {
+    public async disable(context: HandlerContext): Promise<ApplicationCommand | null> {
         if (!this.isCommandHandler()) return null;
-        const found = await this.fetchCommand(guild);
+        const found = await this.fetchCommand(context.guild!);
         return found ? found.delete() : null;
     }
 
