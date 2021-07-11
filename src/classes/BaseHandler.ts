@@ -1,4 +1,4 @@
-import { Message, Interaction, MessageEmbedOptions, MessageEmbed, GuildMember, Guild, ApplicationCommand } from 'discord.js';
+import { Message, Interaction, MessageEmbedOptions, MessageEmbed, GuildMember, Guild, ApplicationCommand, Permissions, CommandInteraction, ButtonInteraction, SelectMenuInteraction } from 'discord.js';
 import { CommandEventHandler } from '../interfaces/CommandEventHandler';
 import { SelectMenuHandler } from '../interfaces/SelectMenuHandler';
 import { CommandHandler } from '../interfaces/CommandHandler';
@@ -50,17 +50,21 @@ export class BaseHandler {
         return Boolean(await this.fetchCommand(guild));
     }
 
-    public async enable(guild?: Guild): Promise<ApplicationCommand | null> {
+    public async enable(context: HandlerContext, guild?: Guild): Promise<ApplicationCommand | null> {
         if (!this.isCommandHandler()) return null;
         const found = await this.fetchCommand(guild);
         if (guild) return found || guild.commands.create(this.commandData);
         else return this.client.application!.commands.create(this.commandData);
     }
 
-    public async disable(guild?: Guild): Promise<ApplicationCommand | null> {
+    public async disable(context: HandlerContext, guild?: Guild): Promise<ApplicationCommand | null> {
         if (!this.isCommandHandler()) return null;
         const found = await this.fetchCommand(guild);
         return found ? found.delete() : null;
+    }
+
+    public isAdmin(member: GuildMember) {
+        return member && !member.permissions.has(Permissions.FLAGS.ADMINISTRATOR) || member;
     }
 }
 
@@ -71,4 +75,4 @@ export interface BaseHandlerOptions {
     readonly nsfw: boolean;
 }
 
-export type HandlerContext = Interaction | Message;
+export type HandlerContext = CommandInteraction | ButtonInteraction | SelectMenuInteraction | Message;
