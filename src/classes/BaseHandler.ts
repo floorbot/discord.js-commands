@@ -1,11 +1,13 @@
-import { Message, Interaction, MessageEmbedOptions, MessageEmbed, GuildMember } from 'discord.js';
-import { CommandHandler } from '../interfaces/CommandHandler';
+import { Message, Interaction, MessageEmbedOptions, MessageEmbed, GuildMember, Guild, ApplicationCommand } from 'discord.js';
+import { CommandEventHandler } from '../interfaces/CommandEventHandler';
 import { SelectMenuHandler } from '../interfaces/SelectMenuHandler';
-import { RegexHandler } from '../interfaces/RegexHandler';
+import { CommandHandler } from '../interfaces/CommandHandler';
 import { ButtonHandler } from '../interfaces/ButtonHandler';
+import { RegexHandler } from '../interfaces/RegexHandler';
 import { CommandClient } from './CommandClient';
 
 export class BaseHandler {
+
     public readonly client: CommandClient;
     public readonly id: string;
     public readonly name: string;
@@ -30,13 +32,37 @@ export class BaseHandler {
             .setColor(member.displayColor || 14840969);
     }
 
+    public isCommandEventHandler(): this is CommandEventHandler { return 'onCommandUpdate' in this }
     public isSelectMenuHandler(): this is SelectMenuHandler { return 'onSelectMenu' in this }
     public isCommandHandler(): this is CommandHandler { return 'onCommand' in this }
     public isButtonHandler(): this is ButtonHandler { return 'onButton' in this }
     public isRegexHandler(): this is RegexHandler { return 'onRegex' in this }
+
+    public async fetchCommand(guild?: Guild): Promise<ApplicationCommand | null> {
+        if (!this.isCommandHandler()) return null;
+        const commands = guild ? await guild.commands.fetch() : await this.client.application!.commands.fetch();
+        const found = commands.find(command => command.name === (<CommandHandler><unknown>this).commandData.name);
+        return found || null;
+    }
+
+    public async isEnabled(guild?: Guild): Promise<boolean> {
+        if (!this.isCommandHandler()) return true;
+        return Boolean(await this.fetchCommand(guild));
+    }
+
+    public async enable(guild?: Guild): Promise<ApplicationCommand | null> {
+        if (!this.isCommandHandler()) return null;
+        const found = await this.fetchCommand(guild);
+        if (guild) return found || guild.commands.create(this.commandData);
+        else return this.client.application!.commands.create(this.commandData);
+    }
+
+    public async disable(guild?: Guild): Promise<ApplicationCommand | null> {
+        if (!this.isCommandHandler()) return null;
+        const found = await this.fetchCommand(guild);
+        return found ? found.delete() : null;
+    }
 }
-
-
 
 export interface BaseHandlerOptions {
     readonly id: string;

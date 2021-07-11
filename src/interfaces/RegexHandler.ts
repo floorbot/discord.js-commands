@@ -1,6 +1,7 @@
+import { BaseHandler } from '../classes/BaseHandler';
 import { Message } from 'discord.js';
 
-export interface RegexHandler {
+export interface RegexHandler extends BaseHandler {
 
     readonly regex: RegExp;
 

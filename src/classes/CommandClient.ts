@@ -1,4 +1,4 @@
-import { Client, ClientOptions, Collection, Constants, CloseEvent, Message, Interaction, CommandInteraction, ButtonInteraction, SelectMenuInteraction, TextChannel, MessageEmbed } from 'discord.js';
+import { Client, ClientOptions, Collection, Constants, CloseEvent, ApplicationCommand, Message, Interaction, CommandInteraction, ButtonInteraction, SelectMenuInteraction, TextChannel, MessageEmbed } from 'discord.js';
 import { BaseHandler, BaseHandlerOptions } from './BaseHandler';
 const { Events } = Constants;
 
@@ -30,6 +30,10 @@ export class CommandClient extends Client {
 
         this.on(Events.INTERACTION_CREATE, this.onInteractionCreate);
         this.on(Events.MESSAGE_CREATE, this.onMessageCreate);
+
+        this.on(Events.APPLICATION_COMMAND_CREATE, this.onApplicationCommandCreate);
+        this.on(Events.APPLICATION_COMMAND_UPDATE, this.onApplicationCommandUpdate);
+        this.on(Events.APPLICATION_COMMAND_DELETE, this.onApplicationCommandDelete);
     }
 
     private getUnsupportedEmbed(name: string): MessageEmbed {
@@ -147,6 +151,27 @@ export class CommandClient extends Client {
                 }
             }
         });
+    }
+
+    private async onApplicationCommandCreate(command: ApplicationCommand): Promise<void> {
+        const handler = this.handlers.get(command.name);
+        if (handler && handler.isCommandEventHandler()) {
+            handler.onCommandCreate(command);
+        }
+    }
+
+    private async onApplicationCommandUpdate(oldCommand: ApplicationCommand | null, newCommand: ApplicationCommand): Promise<void> {
+        const handler = this.handlers.get(newCommand.name);
+        if (handler && handler.isCommandEventHandler()) {
+            handler.onCommandUpdate(oldCommand, newCommand);
+        }
+    }
+
+    private async onApplicationCommandDelete(command: ApplicationCommand): Promise<void> {
+        const handler = this.handlers.get(command.name);
+        if (handler && handler.isCommandEventHandler()) {
+            handler.onCommandDelete(command);
+        }
     }
 
     public async login(token?: string): Promise<string> {
