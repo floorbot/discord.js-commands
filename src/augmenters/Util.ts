@@ -20,7 +20,6 @@ declare module 'discord.js' {
         export function formatString(string: string, fill: Array<string>): string;
         export function formatDecimal(number: number, significance?: number): string;
         export function formatCommas(number: number): string;
-        export function formatDate(date: Date | number, options?: FormatDateOptions): string;
     }
 }
 
@@ -135,25 +134,4 @@ Util.formatDecimal = function(number: number, significance: number = 1): string 
 
 Util.formatCommas = function(number: number): string {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-}
-
-Util.formatDate = function(date: Date | number, options: FormatDateOptions = {}): string {
-    date = date instanceof Date ? date : new Date(date);
-    options = Object.assign({
-        showTime: false,
-        showDate: true,
-        fullName: true
-    }, options);
-
-    const months = options.fullName ? ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'] : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const dateText = `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
-    const timeText = `${date.getHours() % 12}:${date.getMinutes() < 10 ? '0' : ''}${date.getMinutes()}${date.getHours() / 12 > 1 ? 'PM' : 'AM'}`;
-    if (options.showDate && options.showTime) return `${dateText} at ${timeText}`;
-    return options.showDate ? dateText : timeText;
-}
-
-export interface FormatDateOptions {
-    showTime?: boolean; // Shows clock
-    showDate?: boolean; // Shows date
-    fullName?: boolean; // The full month name
 }

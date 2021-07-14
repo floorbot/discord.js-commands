@@ -2,7 +2,7 @@
     "name": "discord.js-commands",
     "version": "1.0.0",
     "description": "A small library for discord.js to add command uniformity with interactions",
-    "main": "./src/index.ts",
+    "main": "src/index.ts",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
