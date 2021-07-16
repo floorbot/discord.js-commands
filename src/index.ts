@@ -1,5 +1,7 @@
 import './augmenters/Util';
 
+export { FormatDateOptions } from './augmenters/Util';
+
 export { CommandClient, CommandClientOptions, ComponentCustomData } from './classes/CommandClient';
 export { BaseHandler, BaseHandlerOptions, HandlerContext } from './classes/BaseHandler';
 
