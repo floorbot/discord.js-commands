@@ -150,7 +150,7 @@ Util.formatDate = function(date: Date | number, options: FormatDateOptions = {})
     const amAMpmPM = date.getHours() / 12 > 1 ?
         (options.fullName ? ' PM' : 'pm') :
         (options.fullName ? ' AM' : 'am')
-    const timeText = `${date.getHours() ? '' : '0'}${date.getHours() % 12}:${date.getMinutes() < 10 ? '0' : ''}${date.getMinutes()}${amAMpmPM}`;
+    const timeText = `${date.getHours() % 12 || '12'}:${date.getMinutes() < 10 ? '0' : ''}${date.getMinutes()}${amAMpmPM}`;
     if (options.showDate && options.showTime) return `${dateText} at ${timeText}`;
     return options.showDate ? dateText : timeText;
 }
