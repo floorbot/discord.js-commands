@@ -222,6 +222,7 @@ export class CommandClient extends Client {
             const finalise = await handler.finalise();
             if (finalise) this.emit('log', `[exit-hook](${handler.id}) ${finalise.message || 'Finalised'}`);
         }
+        return this.destroy();
     }
 }
 
