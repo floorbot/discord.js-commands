@@ -175,7 +175,8 @@ export class CommandClient extends Client {
     public async login(token?: string): Promise<string> {
         const handlers = Array.from(this.handlers.values());
         for (const handler of handlers) {
-            if (await handler.setup()) this.emit('log', `[login](${handler.id}) Handler setup complete`);
+            const setup = await handler.setup();
+            if (setup) this.emit('log', `[login](${handler.id}) ${setup.message || 'Setup complete'}`);
         }
         return super.login(token).then((string: string) => {
             this.emit('log', `[login] Logged in as <${this.user!.tag}>`)
