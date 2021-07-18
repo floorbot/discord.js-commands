@@ -24,7 +24,7 @@ export class CommandClient extends Client {
         this.on(Events.SHARD_RESUME, this.onShardResume);
         this.on(Events.SHARD_DISCONNECT, this.onShardDisconnect);
         this.on(Events.SHARD_ERROR, this.onShardError);
-        exitHook(() => this.onExitHook);
+        exitHook((done) => this.onExitHook(done));
 
         this.on(Events.INTERACTION_CREATE, this.onInteractionCreate);
         this.on(Events.MESSAGE_CREATE, this.onMessageCreate);
@@ -216,13 +216,14 @@ export class CommandClient extends Client {
         }
     }
 
-    private async onExitHook(): Promise<void> {
+    private async onExitHook(done: () => void): Promise<void> {
         this.emit('log', '[exit-hook] Finalising all handlers before exiting');
         for (const [_id, handler] of this.handlers) {
             const finalise = await handler.finalise();
             if (finalise) this.emit('log', `[exit-hook](${handler.id}) ${finalise.message || 'Finalised'}`);
         }
-        return this.destroy();
+        this.destroy();
+        return done();
     }
 }
 
