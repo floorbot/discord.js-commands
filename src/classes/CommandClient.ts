@@ -1,9 +1,7 @@
 import { Client, ClientOptions, Collection, Constants, CloseEvent, ApplicationCommand, Message, Interaction, CommandInteraction, ButtonInteraction, SelectMenuInteraction, TextChannel, MessageEmbed } from 'discord.js';
 import { BaseHandler, BaseHandlerOptions } from './BaseHandler';
-const { Events } = Constants;
-
-// @ts-ignore
 import * as exitHook from 'async-exit-hook';
+const { Events } = Constants;
 
 export interface ComponentCustomData {
     readonly id: string
@@ -185,54 +183,44 @@ export class CommandClient extends Client {
         });
     }
 
-    private onShardReady(id: number, unavailableGuilds: Set<string> | undefined): void {
+    private async onShardReady(id: number, unavailableGuilds: Set<string> | undefined): Promise<void> {
         this.emit('log', `[shard](ready) Shard ${id} ready with ${unavailableGuilds ? unavailableGuilds.size : 0} unavailable guilds`);
-        this.handlers.each((handler: BaseHandler) => {
-            const initialise: Promise<any> | null = handler.initialise();
-            if (initialise) initialise.then(() => {
-                this.emit('log', `[shard](ready)(${handler.id}) Initialised after ready`);
-            });
-        });
+        for (const [_id, handler] of this.handlers) {
+            const initialise = await handler.initialise();
+            if (initialise) this.emit('log', `[shard](ready)(${handler.id}) ${initialise.message || 'Initialised'}`);
+        }
     }
 
-    private onShardResume(id: number, replayedEvents: number): void {
+    private async onShardResume(id: number, replayedEvents: number): Promise<void> {
         this.emit('log', `[shard](resume) Shard ${id} resumed with ${replayedEvents} replayed events`);
-        this.handlers.each((handler: BaseHandler) => {
-            const initialise: Promise<any> | null = handler.initialise();
-            if (initialise) initialise.then(() => {
-                this.emit('log', `[shard](resume)(${handler.id}) Initialised after resume`);
-            });
-        });
+        for (const [_id, handler] of this.handlers) {
+            const initialise = await handler.initialise();
+            if (initialise) this.emit('log', `[shard](resume)(${handler.id}) ${initialise.message || 'Initialised'}`);
+        }
     }
 
-    private onShardDisconnect(event: CloseEvent, id: number): void {
+    private async onShardDisconnect(event: CloseEvent, id: number): Promise<void> {
         this.emit('log', `[shard](disconnect) Shard ${id} disconnected`, event);
-        this.handlers.each((handler: BaseHandler) => {
-            const finalise: Promise<any> | null = handler.finalise();
-            if (finalise) finalise.then(() => {
-                this.emit('log', `[shard](disconnect)(${handler.id}) Finalised after disconnect`);
-            });
-        });
+        for (const [_id, handler] of this.handlers) {
+            const finalise = await handler.finalise();
+            if (finalise) this.emit('log', `[shard](disconnect)(${handler.id}) ${finalise.message || 'Finalised'}`);
+        }
     }
 
-    private onShardError(error: Error, id: number): void {
+    private async onShardError(error: Error, id: number): Promise<void> {
         this.emit('log', `[shard](error) Shard ${id} encountered an error`, error);
-        this.handlers.each((handler: BaseHandler) => {
-            const finalise: Promise<any> | null = handler.finalise();
-            if (finalise) finalise.then(() => {
-                this.emit('log', `[shard](error)(${handler.id}) Finalised after error`);
-            });
-        });
+        for (const [_id, handler] of this.handlers) {
+            const finalise = await handler.finalise();
+            if (finalise) this.emit('log', `[shard](error)(${handler.id}) ${finalise.message || 'Finalised'}`);
+        }
     }
 
-    private onExitHook(): void {
+    private async onExitHook(): Promise<void> {
         this.emit('log', '[SYSTEM](EXIT_HOOK) Finalising all handlers before exiting');
-        this.handlers.each((handler: BaseHandler) => {
-            const finalise: Promise<any> | null = handler.finalise();
-            if (finalise) finalise.then(() => {
-                this.emit('log', `[SYSTEM](EXIT_HOOK)(${handler.id}) Finalised {Exit Hook}`);
-            });
-        });
+        for (const [_id, handler] of this.handlers) {
+            const finalise = await handler.finalise();
+            if (finalise) this.emit('log', `[SYSTEM](EXIT_HOOK)(${handler.id}) ${finalise.message || 'Finalised'}`);
+        }
     }
 }
 

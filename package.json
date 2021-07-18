@@ -17,6 +17,7 @@
     },
     "homepage": "https://github.com/floorbot/discord.js-commands#readme",
     "dependencies": {
+        "@types/async-exit-hook": "^2.0.0",
         "@types/twemoji": "^12.1.1",
         "async-exit-hook": "^2.0.1",
         "discord.js": "github:discordjs/discord.js",

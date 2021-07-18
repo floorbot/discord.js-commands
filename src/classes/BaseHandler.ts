@@ -6,6 +6,19 @@ import { ButtonHandler } from '../interfaces/ButtonHandler';
 import { RegexHandler } from '../interfaces/RegexHandler';
 import { CommandClient } from './CommandClient';
 
+export interface BaseHandlerOptions {
+    readonly id: string;
+    readonly name: string;
+    readonly group: string;
+    readonly nsfw: boolean;
+}
+
+export interface SetupResult {
+    message?: string;
+}
+
+export type HandlerContext = CommandInteraction | ButtonInteraction | SelectMenuInteraction | Message;
+
 export class BaseHandler {
 
     public readonly client: CommandClient;
@@ -22,9 +35,9 @@ export class BaseHandler {
         this.nsfw = options.nsfw;
     }
 
-    public setup(): Promise<any> | null { return null }
-    public initialise(): Promise<any> | null { return null }
-    public finalise(): Promise<any> | null { return null }
+    public async initialise(): Promise<SetupResult | null> { return null }
+    public async finalise(): Promise<SetupResult | null> { return null }
+    public async setup(): Promise<SetupResult | null> { return null }
 
     public getEmbedTemplate(context: HandlerContext, data?: MessageEmbedOptions): MessageEmbed {
         const member = <GuildMember>context.member;
@@ -68,12 +81,3 @@ export class BaseHandler {
         return member && member.permissions.has(Permissions.FLAGS.ADMINISTRATOR);
     }
 }
-
-export interface BaseHandlerOptions {
-    readonly id: string;
-    readonly name: string;
-    readonly group: string;
-    readonly nsfw: boolean;
-}
-
-export type HandlerContext = CommandInteraction | ButtonInteraction | SelectMenuInteraction | Message;
