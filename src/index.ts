@@ -4,6 +4,7 @@ export { FormatDateOptions } from './augmenters/Util';
 
 export { CommandClient, CommandClientOptions, ComponentCustomData } from './classes/CommandClient';
 export { BaseHandler, BaseHandlerOptions, HandlerContext } from './classes/BaseHandler';
+export { Resolver, ResolverType, ResolverResponse } from './classes/Resolver';
 
 export { CommandEventHandler } from './interfaces/CommandEventHandler';
 export { SelectMenuHandler } from './interfaces/SelectMenuHandler';

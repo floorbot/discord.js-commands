@@ -29,6 +29,7 @@ export class BaseHandler {
     public getEmbedTemplate(context: HandlerContext, data?: MessageEmbedOptions): MessageEmbed {
         const member = <GuildMember>context.member;
         return new MessageEmbed(data)
+            .setAuthor(member.displayName, member.user.displayAvatarURL())
             .setColor(member.displayColor || 14840969);
     }
 
