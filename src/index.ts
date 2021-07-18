@@ -2,8 +2,8 @@ import './augmenters/Util';
 
 export { FormatDateOptions } from './augmenters/Util';
 
+export { BaseHandler, BaseHandlerOptions, HandlerContext, SetupResult } from './classes/BaseHandler';
 export { CommandClient, CommandClientOptions, ComponentCustomData } from './classes/CommandClient';
-export { BaseHandler, BaseHandlerOptions, HandlerContext } from './classes/BaseHandler';
 export { Resolver, ResolverType, ResolverResponse } from './classes/Resolver';
 
 export { CommandEventHandler } from './interfaces/CommandEventHandler';
