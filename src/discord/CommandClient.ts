@@ -33,7 +33,7 @@ export class CommandClient extends Client {
             const handler = this.handlers.find(handler => handler.isCommandHandler() && handler.id === interaction.commandName) as (CommandHandler | undefined)
             if (handler) {
                 if (channel instanceof TextChannel && !channel.nsfw && handler.nsfw) {
-                    const embed = EmbedProvider.getNSFWEmbed(handler, interaction);
+                    const embed = EmbedProvider.getNSFWEmbed(interaction, handler);
                     return interaction.reply(embed.toReplyOptions(true));
                 }
                 return handler.onCommand(interaction).then(result => {

@@ -1,4 +1,4 @@
-import { MessageEmbed, MessageEmbedOptions, Message, GuildMember, InteractionReplyOptions } from 'discord.js'
+import { MessageEmbed, MessageEmbedOptions, Message, GuildMember, InteractionReplyOptions, CommandInteraction } from 'discord.js'
 import { BaseHandler, HandlerContext } from '../..';
 
 export class EmbedProvider extends MessageEmbed {
@@ -24,9 +24,18 @@ export class EmbedProvider extends MessageEmbed {
             ].join('\n'));
     }
 
-    public static getNSFWEmbed(handler: BaseHandler, context: HandlerContext): EmbedProvider {
+    public static getNSFWEmbed(context: HandlerContext, handler: BaseHandler): EmbedProvider {
         return new EmbedProvider(context)
             .setDescription(`*Sorry! \`/${handler.id}\` commands can only be used in \`NSFW\` channels 😏*`);
+    }
+
+    public static getForbiddenEmbed(context: HandlerContext, handler: BaseHandler, reason: string) {
+        const type = context instanceof CommandInteraction ? 'command' : 'component';
+        return new EmbedProvider(context)
+            .setDescription([
+                `Sorry! You do not have permission to use this ${handler.id} ${type}!`,
+                `*${reason}*`
+            ].join('\n'));
     }
 
     public toReplyOptions(ephemeral?: boolean): InteractionReplyOptions {
