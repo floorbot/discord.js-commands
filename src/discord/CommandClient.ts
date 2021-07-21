@@ -47,32 +47,36 @@ export class CommandClient extends Client {
         }
 
         if (interaction instanceof ButtonInteraction) {
-            const commandName = interaction.message instanceof Message && interaction.message.interaction ? interaction.message.interaction.commandName : null;
-            const handler = this.handlers.find(handler => handler.isButtonHandler() && handler.id === commandName) as (ButtonHandler<HandlerCustomData> | undefined)
-            if (handler) {
-                const customData = handler.decodeButton(interaction.customId);
-                return handler.onButton(interaction, customData).then(result => {
-                    if (result) this.emit('log', `[${handler.id}](button){${Date.now() - interaction.createdTimestamp}ms} ${result.message || 'Completed'}`);
-                }).catch(error => {
-                    this.emit('log', `[${handler.id}](button){${Date.now() - interaction.createdTimestamp}ms} Encountered an error`, error);
-                    const embed = EmbedProvider.getErrorEmbed(interaction, handler);
-                    return interaction.followUp(embed.toReplyOptions());
-                }).catch(console.error);
+            const [commandName, customDataString] = interaction.customId.split(/-(.+)/);
+            if (commandName && customDataString) {
+                const handler = this.handlers.find(handler => handler.isButtonHandler() && handler.id === commandName) as (ButtonHandler<HandlerCustomData> | undefined)
+                if (handler) {
+                    const customData = handler.decodeButton(customDataString);
+                    return handler.onButton(interaction, customData).then(result => {
+                        if (result) this.emit('log', `[${handler.id}](button){${Date.now() - interaction.createdTimestamp}ms} ${result.message || 'Completed'}`);
+                    }).catch(error => {
+                        this.emit('log', `[${handler.id}](button){${Date.now() - interaction.createdTimestamp}ms} Encountered an error`, error);
+                        const embed = EmbedProvider.getErrorEmbed(interaction, handler);
+                        return interaction.followUp(embed.toReplyOptions());
+                    }).catch(console.error);
+                }
             }
         }
 
         if (interaction instanceof SelectMenuInteraction) {
-            const commandName = interaction.message instanceof Message && interaction.message.interaction ? interaction.message.interaction.commandName : null;
-            const handler = this.handlers.find(handler => handler.isButtonHandler() && handler.id === commandName) as (SelectMenuHandler<HandlerCustomData> | undefined)
-            if (handler) {
-                const customData = handler.decodeSelectMenu(interaction.customId);
-                return handler.onSelectMenu(interaction, customData).then(result => {
-                    if (result) this.emit('log', `[${handler.id}](selectmenu){${Date.now() - interaction.createdTimestamp}ms} ${result.message || 'Completed'}`);
-                }).catch(error => {
-                    this.emit('log', `[${handler.id}](selectmenu){${Date.now() - interaction.createdTimestamp}ms} Encountered an error`, error);
-                    const embed = EmbedProvider.getErrorEmbed(interaction, handler);
-                    return interaction.followUp(embed.toReplyOptions());
-                }).catch(console.error);
+            const [commandName, customDataString] = interaction.customId.split(/-(.+)/);
+            if (commandName && customDataString) {
+                const handler = this.handlers.find(handler => handler.isButtonHandler() && handler.id === commandName) as (SelectMenuHandler<HandlerCustomData> | undefined)
+                if (handler) {
+                    const customData = handler.decodeSelectMenu(interaction.customId);
+                    return handler.onSelectMenu(interaction, customData).then(result => {
+                        if (result) this.emit('log', `[${handler.id}](selectmenu){${Date.now() - interaction.createdTimestamp}ms} ${result.message || 'Completed'}`);
+                    }).catch(error => {
+                        this.emit('log', `[${handler.id}](selectmenu){${Date.now() - interaction.createdTimestamp}ms} Encountered an error`, error);
+                        const embed = EmbedProvider.getErrorEmbed(interaction, handler);
+                        return interaction.followUp(embed.toReplyOptions());
+                    }).catch(console.error);
+                }
             }
         }
     }

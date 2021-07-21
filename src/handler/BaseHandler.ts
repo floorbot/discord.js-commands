@@ -3,7 +3,6 @@ import { CommandHandler, ButtonHandler, SelectMenuHandler, RegexHandler } from '
 
 export interface HandlerOptions {
     readonly id: string;
-    readonly nsfw: boolean;
 }
 
 export interface HandlerCustomData { [x: string]: string | number | boolean | null | HandlerCustomData | HandlerCustomDataArray }
@@ -15,11 +14,9 @@ export type HandlerContext = CommandInteraction | ButtonInteraction | SelectMenu
 export class BaseHandler {
 
     public readonly id: string;
-    public readonly nsfw: boolean;
 
     constructor(options: HandlerOptions) {
         this.id = options.id;
-        this.nsfw = options.nsfw;
     }
 
     public async initialise(): Promise<HandlerResult | null> { return null }

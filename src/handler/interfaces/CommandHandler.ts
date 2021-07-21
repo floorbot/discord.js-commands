@@ -4,7 +4,7 @@ import { BaseHandler, HandlerResult } from '../..';
 export interface CommandHandler extends BaseHandler {
 
     readonly commandData: ApplicationCommandData;
-    readonly isGlobal: boolean;
+    readonly nsfw: boolean;
 
     onCommand(interaction: CommandInteraction): Promise<HandlerResult | null>;
 }
