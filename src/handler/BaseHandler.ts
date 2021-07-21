@@ -5,8 +5,8 @@ export interface HandlerOptions {
     readonly id: string;
 }
 
-export interface HandlerCustomData { [x: string]: string | number | boolean | null | HandlerCustomData | HandlerCustomDataArray }
-export interface HandlerCustomDataArray extends Array<string | number | boolean | null | HandlerCustomData | HandlerCustomDataArray> { }
+export interface HandlerCustomData { [x: string]: string | number | boolean | null | undefined | HandlerCustomData | HandlerCustomDataArray }
+export interface HandlerCustomDataArray extends Array<string | number | boolean | null | undefined | HandlerCustomData | HandlerCustomDataArray> { }
 export interface HandlerResult { message?: string; }
 
 export type HandlerContext = CommandInteraction | ButtonInteraction | SelectMenuInteraction | Message;
