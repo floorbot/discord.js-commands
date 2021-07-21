@@ -68,7 +68,7 @@ export class CommandClient extends Client {
             if (commandName && customDataString) {
                 const handler = this.handlers.find(handler => handler.isButtonHandler() && handler.id === commandName) as (SelectMenuHandler<HandlerCustomData> | undefined)
                 if (handler) {
-                    const customData = handler.decodeSelectMenu(interaction.customId);
+                    const customData = handler.decodeSelectMenu(customDataString);
                     return handler.onSelectMenu(interaction, customData).then(result => {
                         if (result) this.emit('log', `[${handler.id}](selectmenu){${Date.now() - interaction.createdTimestamp}ms} ${result.message || 'Completed'}`);
                     }).catch(error => {
