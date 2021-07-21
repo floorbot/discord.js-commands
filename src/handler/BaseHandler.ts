@@ -3,8 +3,6 @@ import { CommandHandler, ButtonHandler, SelectMenuHandler, RegexHandler } from '
 
 export interface HandlerOptions {
     readonly id: string;
-    readonly name: string;
-    readonly group: string;
     readonly nsfw: boolean;
 }
 
@@ -17,14 +15,10 @@ export type HandlerContext = CommandInteraction | ButtonInteraction | SelectMenu
 export class BaseHandler {
 
     public readonly id: string;
-    public readonly name: string;
-    public readonly group: string;
     public readonly nsfw: boolean;
 
     constructor(options: HandlerOptions) {
         this.id = options.id;
-        this.name = options.name;
-        this.group = options.group;
         this.nsfw = options.nsfw;
     }
 
