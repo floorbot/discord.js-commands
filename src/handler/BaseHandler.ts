@@ -1,8 +1,7 @@
-import { Message, Guild, ApplicationCommand, CommandInteraction, ButtonInteraction, SelectMenuInteraction, MessageEmbed, MessageEmbedOptions } from 'discord.js';
+import { Message, CommandInteraction, ButtonInteraction, SelectMenuInteraction } from 'discord.js';
 import { SelectMenuHandler } from './interfaces/SelectMenuHandler';
 import { CommandHandler } from './interfaces/CommandHandler';
 import { ButtonHandler } from './interfaces/ButtonHandler';
-import { EmbedProvider } from './providers/EmbedProvider';
 import { RegexHandler } from './interfaces/RegexHandler';
 import { CommandClient } from '../discord/CommandClient';
 
@@ -19,7 +18,7 @@ export interface HandlerResult { message?: string; }
 
 export type HandlerContext = CommandInteraction | ButtonInteraction | SelectMenuInteraction | Message;
 
-export abstract class BaseHandler {
+export class BaseHandler {
 
     public readonly client: CommandClient;
     public readonly id: string;
@@ -34,16 +33,6 @@ export abstract class BaseHandler {
         this.group = options.group;
         this.nsfw = options.nsfw;
     }
-
-    public getEmbedTemplate(context: HandlerContext, data?: MessageEmbed | MessageEmbedOptions): EmbedProvider {
-        return new EmbedProvider(context, data);
-    }
-
-    public abstract isEnabled(guild?: Guild): Promise<boolean>;
-    public abstract enable(guild?: Guild): Promise<ApplicationCommand | null>;
-    public abstract disable(guild?: Guild): Promise<ApplicationCommand | null>;
-    public abstract hasPermission(context: HandlerContext): Promise<boolean>;
-    public abstract fetchCommand(guild?: Guild): Promise<ApplicationCommand | null>;
 
     public async initialise(): Promise<HandlerResult | null> { return null }
     public async finalise(): Promise<HandlerResult | null> { return null }
