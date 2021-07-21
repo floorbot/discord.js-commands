@@ -1,13 +1,15 @@
-import './augmenters/Util';
+import './discord/Util';
 
-export { FormatDateOptions } from './augmenters/Util';
+export * from './discord/Util';
+export * from './discord/CommandClient';
 
-export { BaseHandler, BaseHandlerOptions, HandlerContext, SetupResult } from './classes/BaseHandler';
-export { CommandClient, CommandClientOptions, ComponentCustomData } from './classes/CommandClient';
-export { Resolver, ResolverType, ResolverResponse } from './classes/Resolver';
+export * from './handler/BaseHandler';
 
-export { CommandEventHandler } from './interfaces/CommandEventHandler';
-export { SelectMenuHandler } from './interfaces/SelectMenuHandler';
-export { ButtonHandler } from './interfaces/ButtonHandler';
-export { CommandHandler } from './interfaces/CommandHandler';
-export { RegexHandler } from './interfaces/RegexHandler';
+export * from './handler/interfaces/SelectMenuHandler';
+export * from './handler/interfaces/ButtonHandler';
+export * from './handler/interfaces/CommandHandler';
+export * from './handler/interfaces/RegexHandler';
+
+export * from './handler/providers/SelectMenuProvider';
+export * from './handler/providers/ButtonProvider';
+export * from './handler/providers/EmbedProvider';

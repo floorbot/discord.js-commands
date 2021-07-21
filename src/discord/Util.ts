@@ -1,5 +1,5 @@
 import { Util, Collection, User, Guild, GuildMember, TextChannel, DMChannel, Role, Message } from 'discord.js';
-import { HandlerContext } from '../classes/BaseHandler';
+import { HandlerContext } from '../handler/BaseHandler';
 import * as twemoji from 'twemoji';
 
 declare module 'discord.js' {
@@ -124,8 +124,8 @@ Util.capitalizeString = function(string: string): string {
 }
 
 Util.formatString = function(string: string, fill: Array<string>): string {
-    return string.replace(/{(\d+)}/g, (match, number) => {
-        return typeof fill[number] !== 'undefined' ? fill[number] : match;
+    return string.replace(/{(\d+)}/g, (match, number: number) => {
+        return typeof fill[number] !== 'undefined' ? fill[number]! : match;
     });
 }
 

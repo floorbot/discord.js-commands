@@ -1,10 +1,10 @@
 import { CommandInteraction, ApplicationCommandData } from 'discord.js';
-import { BaseHandler } from '../classes/BaseHandler';
+import { BaseHandler, HandlerResult } from '../BaseHandler';
 
 export interface CommandHandler extends BaseHandler {
 
     readonly commandData: ApplicationCommandData;
     readonly isGlobal: boolean;
 
-    onCommand<T>(interaction: CommandInteraction): Promise<T>;
+    onCommand(interaction: CommandInteraction): Promise<HandlerResult | null>;
 }

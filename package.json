@@ -16,6 +16,9 @@
         "url": "https://github.com/floorbot/discord.js-commands/issues"
     },
     "homepage": "https://github.com/floorbot/discord.js-commands#readme",
+    "devDependencies": {
+        "typescript": "^4.4.0-beta"
+    },
     "dependencies": {
         "@types/async-exit-hook": "^2.0.0",
         "@types/twemoji": "^12.1.1",
