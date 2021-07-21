@@ -2,7 +2,7 @@ import { MessageSelectMenu, MessageSelectMenuOptions, MessageActionRow } from 'd
 import { SelectMenuHandler } from '../interfaces/SelectMenuHandler';
 import { HandlerCustomData } from '../..';
 
-export class SelectMenuProvider<T extends HandlerCustomData, H extends SelectMenuHandler<T>> extends MessageSelectMenu {
+export class SelectMenuFactory<T extends HandlerCustomData, H extends SelectMenuHandler<T>> extends MessageSelectMenu {
 
     public readonly handler: H;
 

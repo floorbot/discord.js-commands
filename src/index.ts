@@ -10,6 +10,6 @@ export * from './handler/interfaces/ButtonHandler';
 export * from './handler/interfaces/CommandHandler';
 export * from './handler/interfaces/RegexHandler';
 
-export * from './handler/providers/SelectMenuProvider';
-export * from './handler/providers/ButtonProvider';
-export * from './handler/providers/EmbedProvider';
+export * from './handler/factories/SelectMenuFactory';
+export * from './handler/factories/ButtonFactory';
+export * from './handler/factories/EmbedFactory';
