@@ -105,7 +105,7 @@ export class CommandClient extends Client {
 
     public override async login(token?: string): Promise<string> {
         for (const handler of this.handlers) {
-            const setup = await handler.setup();
+            const setup = await handler.setup(this);
             if (setup) this.emit('log', `[login](${handler.id}) ${setup.message || 'Setup complete'}`);
         }
         return super.login(token).then((string: string) => {
@@ -117,7 +117,7 @@ export class CommandClient extends Client {
     private async onShardReady(id: number, unavailableGuilds: Set<string> | undefined): Promise<void> {
         this.emit('log', `[shard-ready] Shard ${id} ready with ${unavailableGuilds ? unavailableGuilds.size : 0} unavailable guilds`);
         for (const handler of this.handlers) {
-            const initialise = await handler.initialise();
+            const initialise = await handler.initialise(this);
             if (initialise) this.emit('log', `[shard-ready](${handler.id}) ${initialise.message || 'Initialised'}`);
         }
     }
@@ -125,7 +125,7 @@ export class CommandClient extends Client {
     private async onShardResume(id: number, replayedEvents: number): Promise<void> {
         this.emit('log', `[shard-resume] Shard ${id} resumed with ${replayedEvents} replayed events`);
         for (const handler of this.handlers) {
-            const initialise = await handler.initialise();
+            const initialise = await handler.initialise(this);
             if (initialise) this.emit('log', `[shard-resume](${handler.id}) ${initialise.message || 'Initialised'}`);
         }
     }
@@ -133,7 +133,7 @@ export class CommandClient extends Client {
     private async onShardDisconnect(event: CloseEvent, id: number): Promise<void> {
         this.emit('log', `[shard-disconnect] Shard ${id} disconnected`, event);
         for (const handler of this.handlers) {
-            const finalise = await handler.finalise();
+            const finalise = await handler.finalise(this);
             if (finalise) this.emit('log', `[shard-disconnect](${handler.id}) ${finalise.message || 'Finalised'}`);
         }
     }
@@ -141,7 +141,7 @@ export class CommandClient extends Client {
     private async onShardError(error: Error, id: number): Promise<void> {
         this.emit('log', `[shard-error] Shard ${id} encountered an error`, error);
         for (const handler of this.handlers) {
-            const finalise = await handler.finalise();
+            const finalise = await handler.finalise(this);
             if (finalise) this.emit('log', `[shard-error](${handler.id}) ${finalise.message || 'Finalised'}`);
         }
     }
@@ -149,7 +149,7 @@ export class CommandClient extends Client {
     private async onExitHook(done: () => void): Promise<void> {
         this.emit('log', '[exit-hook] Finalising all handlers before exiting');
         for (const handler of this.handlers) {
-            const finalise = await handler.finalise();
+            const finalise = await handler.finalise(this);
             if (finalise) this.emit('log', `[exit-hook](${handler.id}) ${finalise.message || 'Finalised'}`);
         }
         this.destroy();
