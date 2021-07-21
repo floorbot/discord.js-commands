@@ -1,4 +1,4 @@
-import { Message, CommandInteraction, ButtonInteraction, SelectMenuInteraction } from 'discord.js';
+import { Message, CommandInteraction, ButtonInteraction, SelectMenuInteraction, GuildMember, Permissions } from 'discord.js';
 import { CommandHandler, ButtonHandler, SelectMenuHandler, RegexHandler } from '..';
 import { CommandClient } from '../discord/CommandClient';
 
@@ -28,4 +28,9 @@ export class BaseHandler {
     public isButtonHandler(): this is ButtonHandler<HandlerCustomData> { return 'onButton' in this }
     public isCommandHandler(): this is CommandHandler { return 'onCommand' in this }
     public isRegexHandler(): this is RegexHandler { return 'onRegex' in this }
+
+    public isAdmin(context: HandlerContext) {
+        const { member } = <{ member: GuildMember }>context
+        return member && member.permissions.has(Permissions.FLAGS.ADMINISTRATOR);
+    }
 }
