@@ -1,10 +1,6 @@
 import { Client, ClientOptions, Constants, CloseEvent, Message, Interaction, CommandInteraction, ButtonInteraction, SelectMenuInteraction, TextChannel } from 'discord.js';
-import { BaseHandler, HandlerCustomData } from '../handler/BaseHandler';
+import { EmbedProvider, CommandHandler, ButtonHandler, SelectMenuHandler, BaseHandler, HandlerCustomData } from '..';
 import * as exitHook from 'async-exit-hook';
-import { EmbedProvider } from '..';
-import { CommandHandler } from '../handler/interfaces/CommandHandler';
-import { ButtonHandler } from '../handler/interfaces/ButtonHandler';
-import { SelectMenuHandler } from '../handler/interfaces/SelectMenuHandler';
 const { Events } = Constants;
 
 export interface CommandClientOptions extends ClientOptions {
@@ -80,7 +76,6 @@ export class CommandClient extends Client {
             }
         }
     }
-
 
     private async onMessageCreate(message: Message): Promise<void> {
         for (const handler of this.handlers) {

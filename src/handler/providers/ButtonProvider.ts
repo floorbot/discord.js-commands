@@ -1,6 +1,5 @@
-import { MessageButton, MessageButtonOptions, MessageActionRow } from 'discord.js'
-import { ButtonHandler } from '../interfaces/ButtonHandler';
-import { HandlerCustomData } from '../BaseHandler';
+import { MessageButton, MessageButtonOptions, MessageActionRow } from 'discord.js';
+import { ButtonHandler, HandlerCustomData } from '../..';
 
 export class ButtonProvider<T extends HandlerCustomData, H extends ButtonHandler<T>> extends MessageButton {
 

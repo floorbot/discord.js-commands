@@ -1,5 +1,5 @@
 import { Util, Collection, User, Guild, GuildMember, TextChannel, DMChannel, Role, Message } from 'discord.js';
-import { HandlerContext } from '../handler/BaseHandler';
+import { HandlerContext } from '..';
 import * as twemoji from 'twemoji';
 
 declare module 'discord.js' {

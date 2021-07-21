@@ -1,9 +1,5 @@
 import { Message, CommandInteraction, ButtonInteraction, SelectMenuInteraction } from 'discord.js';
-import { SelectMenuHandler } from './interfaces/SelectMenuHandler';
-import { CommandHandler } from './interfaces/CommandHandler';
-import { ButtonHandler } from './interfaces/ButtonHandler';
-import { RegexHandler } from './interfaces/RegexHandler';
-import { CommandClient } from '../discord/CommandClient';
+import { CommandHandler, ButtonHandler, SelectMenuHandler, RegexHandler, CommandClient } from '..';
 
 export interface HandlerOptions {
     readonly id: string;

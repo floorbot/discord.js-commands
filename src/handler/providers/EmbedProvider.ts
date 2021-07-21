@@ -1,5 +1,5 @@
 import { MessageEmbed, MessageEmbedOptions, Message, GuildMember, InteractionReplyOptions } from 'discord.js'
-import { BaseHandler, HandlerContext } from '../BaseHandler';
+import { BaseHandler, HandlerContext } from '../..';
 
 export class EmbedProvider extends MessageEmbed {
 

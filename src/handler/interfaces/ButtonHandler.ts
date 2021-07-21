@@ -1,4 +1,4 @@
-import { BaseHandler, HandlerResult, HandlerCustomData } from '../BaseHandler';
+import { BaseHandler, HandlerResult, HandlerCustomData } from '../..';
 import { ButtonInteraction } from 'discord.js'
 
 export interface ButtonHandler<T extends HandlerCustomData> extends BaseHandler {

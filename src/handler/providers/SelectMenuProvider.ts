@@ -1,6 +1,6 @@
 import { MessageSelectMenu, MessageSelectMenuOptions, MessageActionRow } from 'discord.js';
 import { SelectMenuHandler } from '../interfaces/SelectMenuHandler';
-import { HandlerCustomData } from '../BaseHandler';
+import { HandlerCustomData } from '../..';
 
 export class SelectMenuProvider<T extends HandlerCustomData, H extends SelectMenuHandler<T>> extends MessageSelectMenu {
 

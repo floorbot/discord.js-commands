@@ -1,5 +1,5 @@
 import { CommandInteraction, ApplicationCommandData } from 'discord.js';
-import { BaseHandler, HandlerResult } from '../BaseHandler';
+import { BaseHandler, HandlerResult } from '../..';
 
 export interface CommandHandler extends BaseHandler {
 

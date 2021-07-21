@@ -1,4 +1,4 @@
-import { BaseHandler, HandlerResult } from '../BaseHandler';
+import { BaseHandler, HandlerResult } from '../..';
 import { Message } from 'discord.js';
 
 export interface RegexHandler extends BaseHandler {
