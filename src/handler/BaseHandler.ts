@@ -1,5 +1,5 @@
 import { Message, CommandInteraction, ButtonInteraction, SelectMenuInteraction } from 'discord.js';
-import { CommandHandler, ButtonHandler, SelectMenuHandler, RegexHandler, CommandClient } from '..';
+import { CommandHandler, ButtonHandler, SelectMenuHandler, RegexHandler } from '..';
 
 export interface HandlerOptions {
     readonly id: string;
@@ -16,14 +16,12 @@ export type HandlerContext = CommandInteraction | ButtonInteraction | SelectMenu
 
 export class BaseHandler {
 
-    public readonly client: CommandClient;
     public readonly id: string;
     public readonly name: string;
     public readonly group: string;
     public readonly nsfw: boolean;
 
-    constructor(client: CommandClient, options: HandlerOptions) {
-        this.client = client;
+    constructor(options: HandlerOptions) {
         this.id = options.id;
         this.name = options.name;
         this.group = options.group;
