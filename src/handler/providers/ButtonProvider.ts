@@ -12,7 +12,7 @@ export class ButtonProvider<T extends HandlerCustomData, H extends ButtonHandler
 
     public override setCustomId(data: string | T): this {
         if (typeof data === 'string') return super.setCustomId(data);
-        return super.setCustomId(this.handler.encodeButton(data));
+        return super.setCustomId(`${this.handler.id}-${this.handler.encodeButton(data)}`);
     }
 
     public toActionRow(): MessageActionRow {

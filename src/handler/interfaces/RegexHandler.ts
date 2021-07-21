@@ -6,5 +6,5 @@ export interface RegexHandler extends BaseHandler {
     readonly regex: RegExp;
     readonly nsfw: boolean;
 
-    onRegex(message: Message, match: string): Promise<HandlerResult | null>;
+    onRegex(message: Message, match: string): Promise<HandlerResult | null | any>;
 }

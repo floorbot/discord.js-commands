@@ -6,5 +6,5 @@ export interface CommandHandler extends BaseHandler {
     readonly commandData: ApplicationCommandData;
     readonly nsfw: boolean;
 
-    onCommand(interaction: CommandInteraction): Promise<HandlerResult | null>;
+    onCommand(interaction: CommandInteraction): Promise<HandlerResult | null | any>;
 }
