@@ -1,11 +1,11 @@
-import { Util, Collection, User, Guild, GuildMember, TextChannel, DMChannel, Role, Message } from 'discord.js';
+import { Util, Collection, User, Guild, GuildMember, TextChannel, DMChannel, Role, Message, GuildChannel, Channel, Client } from 'discord.js';
 import { HandlerContext } from '..';
 import * as twemoji from 'twemoji';
 
 declare module 'discord.js' {
     export namespace Util {
         export function toFahrenheit(degrees: number): number;
-        export function resolveEmoji(string: string): string | null;
+        export function resolveEmoji(string: string): { string: string, imageURL: string } | null;
         export function resolveRole(context: HandlerContext, string: string): Role | null;
         export function resolveUser(context: HandlerContext, string: string, allowBot?: boolean): User | null;
         export function resolveMember(context: HandlerContext, string: string, allowBot?: boolean): GuildMember | null;
@@ -28,15 +28,18 @@ Util.toFahrenheit = function(degrees: number): number {
     return Math.round((degrees) * 9 / 5 + 32);
 }
 
-Util.resolveEmoji = function(string: string): string | null {
-    const emojiDefault = twemoji.parse(string).match(/(src=\"http(s?):)([^\s])*\.(?:jpg|gif|png)/g);
-    if (emojiDefault) return string;
-    const emojiCustom = string.match(/<a?:[^:]+:(\d+)>/g);
-    if (emojiCustom && emojiCustom.length) emojiCustom[0];
+Util.resolveEmoji = function(string: string): { string: string, imageURL: string } | null {
+    const png = /<:[^:]+:(\d+)>/g.exec(string);
+    if (png) return { string: string, imageURL: `https://cdn.discordapp.com/emojis/${png[1]}.png` };
+    const gif = /<a:[^:]+:(\d+)>/g.exec(string);
+    if (gif) return { string: string, imageURL: `https://cdn.discordapp.com/emojis/${gif[1]}.gif` };
+    const svg = twemoji.parse(string, { folder: 'svg', ext: '.svg' }).match(/(http(s?):)([^\s])*\.svg/);
+    if (svg) return { string: string, imageURL: svg[0]! };
     return null;
 }
 
 Util.resolveRole = function(context: HandlerContext, string: string): Role | null {
+    string = string.toLowerCase();
     const { channel } = context;
     if (channel instanceof TextChannel) {
         const { guild } = channel;
@@ -50,30 +53,28 @@ Util.resolveRole = function(context: HandlerContext, string: string): Role | nul
 }
 
 Util.resolveUser = function(context: HandlerContext, string: string, allowBot: boolean = false): User | null {
+    string = string.toLowerCase();
     const user = context instanceof Message ? context.author : context.user;
-    const { channel, client } = context;
-    if (string === 'me' && (allowBot || !user.bot)) return user;
-    if (channel instanceof DMChannel) {
+    const { guild, channel, client } = <{
+        guild: Guild | undefined,
+        channel: Channel,
+        client: Client,
+    }>context;
+    if (string === 'me') return user;
+    if (!guild && channel instanceof DMChannel) {
         if (channel.recipient.tag.toLowerCase().includes(string)) return user;
         if (allowBot && client.user && client.user.tag.toLowerCase().includes(string)) return client.user;
+        return null;
     }
-    if (channel instanceof TextChannel) {
-        const member = channel.members.find((member: GuildMember) => {
-            if (!allowBot && member.user.bot) return false;
-            const testMention: boolean = member.toString() === string;
-            const testUsername: boolean = member.user.tag.toLowerCase().includes(string);
-            const testDisplayName: boolean = member.displayName.toLowerCase().includes(string);
-            return testMention || testUsername || testDisplayName;
-        })
-        if (member) return member.user;
-    }
-    return null;
+    const member = Util.resolveMember(context, string, allowBot);
+    return member ? member.user : null;
 }
 
 Util.resolveMember = function(context: HandlerContext, string: string, allowBot: boolean = false): GuildMember | null {
-    const { channel, member } = context;
-    if (channel instanceof TextChannel) {
-        if (string === 'me' && (allowBot || (member && !member.user.bot))) return <GuildMember>member;
+    string = string.toLowerCase();
+    const { channel, member } = <{ channel: GuildChannel, member: GuildMember }>context;
+    if (channel instanceof GuildChannel) {
+        if (string === 'me' && (allowBot || (member && !member.user.bot))) return member;
         return channel.members.find((member: GuildMember) => {
             if (!allowBot && member.user.bot) return false;
             const testMention: boolean = member.toString() === string;

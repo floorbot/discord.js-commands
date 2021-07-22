@@ -1,5 +1,5 @@
 import { Client, ClientOptions, Constants, CloseEvent, Message, Interaction, CommandInteraction, ButtonInteraction, SelectMenuInteraction, TextChannel } from 'discord.js';
-import { EmbedProvider, CommandHandler, ButtonHandler, SelectMenuHandler, BaseHandler, HandlerCustomData } from '..';
+import { EmbedFactory, CommandHandler, ButtonHandler, SelectMenuHandler, BaseHandler, HandlerCustomData } from '..';
 import * as exitHook from 'async-exit-hook';
 const { Events } = Constants;
 
@@ -33,14 +33,14 @@ export class CommandClient extends Client {
             const handler = this.handlers.find(handler => handler.isCommandHandler() && handler.id === interaction.commandName) as (CommandHandler | undefined)
             if (handler) {
                 if (channel instanceof TextChannel && !channel.nsfw && handler.nsfw) {
-                    const embed = EmbedProvider.getNSFWEmbed(interaction, handler);
+                    const embed = EmbedFactory.getNSFWEmbed(interaction, handler);
                     return interaction.reply(embed.toReplyOptions(true));
                 }
                 return handler.onCommand(interaction).then(result => {
                     if (result) this.emit('log', `[${handler.id}](command){${Date.now() - interaction.createdTimestamp}ms} ${result.message || 'Completed'}`);
                 }).catch(error => {
                     this.emit('log', `[${handler.id}](command){${Date.now() - interaction.createdTimestamp}ms} Encountered an error`, error);
-                    const embed = EmbedProvider.getErrorEmbed(interaction, handler);
+                    const embed = EmbedFactory.getErrorEmbed(interaction, handler);
                     return interaction.followUp(embed.toReplyOptions());
                 }).catch(console.error);
             }
@@ -56,7 +56,7 @@ export class CommandClient extends Client {
                         if (result) this.emit('log', `[${handler.id}](button){${Date.now() - interaction.createdTimestamp}ms} ${result.message || 'Completed'}`);
                     }).catch(error => {
                         this.emit('log', `[${handler.id}](button){${Date.now() - interaction.createdTimestamp}ms} Encountered an error`, error);
-                        const embed = EmbedProvider.getErrorEmbed(interaction, handler);
+                        const embed = EmbedFactory.getErrorEmbed(interaction, handler);
                         return interaction.followUp(embed.toReplyOptions());
                     }).catch(console.error);
                 }
@@ -73,7 +73,7 @@ export class CommandClient extends Client {
                         if (result) this.emit('log', `[${handler.id}](selectmenu){${Date.now() - interaction.createdTimestamp}ms} ${result.message || 'Completed'}`);
                     }).catch(error => {
                         this.emit('log', `[${handler.id}](selectmenu){${Date.now() - interaction.createdTimestamp}ms} Encountered an error`, error);
-                        const embed = EmbedProvider.getErrorEmbed(interaction, handler);
+                        const embed = EmbedFactory.getErrorEmbed(interaction, handler);
                         return interaction.followUp(embed.toReplyOptions());
                     }).catch(console.error);
                 }
@@ -95,7 +95,7 @@ export class CommandClient extends Client {
                         if (result) this.emit('log', `[${handler.id}](regex){${Date.now() - message.createdTimestamp}ms} ${result.message}`);
                     }).catch(error => {
                         this.emit('log', `[${handler.id}](regex){${Date.now() - message.createdTimestamp}ms} Encountered an error`, error);
-                        const embed = EmbedProvider.getErrorEmbed(message, handler);
+                        const embed = EmbedFactory.getErrorEmbed(message, handler);
                         return message.reply(embed.toReplyOptions());
                     }).catch(console.error);
                 }
