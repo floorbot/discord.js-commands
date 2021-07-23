@@ -32,6 +32,7 @@ export class CommandClient extends Client {
         if (interaction instanceof CommandInteraction) {
             const handler = this.handlers.find(handler => handler.isCommandHandler() && handler.id === interaction.commandName) as (CommandHandler | undefined)
             if (handler) {
+                if (!(await handler.isEnabled(interaction.guild || undefined))) return interaction.reply(EmbedFactory.getDisabledEmbed(interaction, handler).toReplyOptions(true));
                 if (channel instanceof TextChannel && !channel.nsfw && handler.nsfw) {
                     const embed = EmbedFactory.getNSFWEmbed(interaction, handler);
                     return interaction.reply(embed.toReplyOptions(true));
@@ -51,6 +52,7 @@ export class CommandClient extends Client {
             if (commandName && customDataString) {
                 const handler = this.handlers.find(handler => handler.isButtonHandler() && handler.id === commandName) as (ButtonHandler<HandlerCustomData> | undefined)
                 if (handler) {
+                    if (!(await handler.isEnabled(interaction.guild || undefined))) return interaction.reply(EmbedFactory.getDisabledEmbed(interaction, handler).toReplyOptions(true));
                     const customData = handler.decodeButton(customDataString);
                     return handler.onButton(interaction, customData).then(result => {
                         if (result) this.emit('log', `[${handler.id}](button){${Date.now() - interaction.createdTimestamp}ms} ${result.message || 'Completed'}`);
@@ -68,6 +70,7 @@ export class CommandClient extends Client {
             if (commandName && customDataString) {
                 const handler = this.handlers.find(handler => handler.isButtonHandler() && handler.id === commandName) as (SelectMenuHandler<HandlerCustomData> | undefined)
                 if (handler) {
+                    if (!(await handler.isEnabled(interaction.guild || undefined))) return interaction.reply(EmbedFactory.getDisabledEmbed(interaction, handler).toReplyOptions(true));
                     const customData = handler.decodeSelectMenu(customDataString);
                     return handler.onSelectMenu(interaction, customData).then(result => {
                         if (result) this.emit('log', `[${handler.id}](selectmenu){${Date.now() - interaction.createdTimestamp}ms} ${result.message || 'Completed'}`);
@@ -83,6 +86,7 @@ export class CommandClient extends Client {
 
     private async onMessageCreate(message: Message): Promise<void> {
         for (const handler of this.handlers) {
+            if (!(await handler.isEnabled())) return;
             if (handler.isRegexHandler()) {
                 const matches = handler.regex.exec(message.content);
                 if (matches && matches[1]) {

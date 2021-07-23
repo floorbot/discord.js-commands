@@ -1,4 +1,4 @@
-import { Message, CommandInteraction, ButtonInteraction, SelectMenuInteraction, GuildMember, Permissions } from 'discord.js';
+import { Message, CommandInteraction, ButtonInteraction, SelectMenuInteraction, GuildMember, Permissions, Guild } from 'discord.js';
 import { CommandHandler, ButtonHandler, SelectMenuHandler, RegexHandler } from '..';
 import { CommandClient } from '../discord/CommandClient';
 
@@ -12,13 +12,15 @@ export interface HandlerResult { message?: string; }
 
 export type HandlerContext = CommandInteraction | ButtonInteraction | SelectMenuInteraction | Message;
 
-export class BaseHandler {
+export abstract class BaseHandler {
 
     public readonly id: string;
 
     constructor(options: HandlerOptions) {
         this.id = options.id;
     }
+
+    public abstract isEnabled(guild?: Guild): Promise<boolean>;
 
     public async initialise(_client: CommandClient): Promise<HandlerResult | null | any> { return null }
     public async finalise(_client: CommandClient): Promise<HandlerResult | null | any> { return null }

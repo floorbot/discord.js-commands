@@ -16,6 +16,14 @@ export class EmbedFactory extends MessageEmbed {
         }
     }
 
+    public static getDisabledEmbed(context: HandlerContext, handler: BaseHandler): EmbedFactory {
+        return new EmbedFactory(context)
+            .setDescription([
+                `Sorry! The handler for \`/${handler.id}\` is not enabled 😝`,
+                `*This could be an older message from when it was previously enabled*`
+            ].join('\n'));
+    }
+
     public static getErrorEmbed(context: HandlerContext, handler: BaseHandler): EmbedFactory {
         return new EmbedFactory(context)
             .setDescription([
