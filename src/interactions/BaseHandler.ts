@@ -15,7 +15,7 @@ export type HandlerContext = CommandInteraction | ButtonInteraction | SelectMenu
 
 export abstract class BaseHandler {
 
-    public abstract readonly responseFactory: ResponseFactory<this>;
+    public abstract readonly responseFactory: ResponseFactory<BaseHandler>;
 
     public readonly nsfw: boolean;
     public readonly id: string;
