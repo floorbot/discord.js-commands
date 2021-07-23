@@ -1,5 +1,5 @@
-import { MessageEmbed, MessageEmbedOptions, InteractionReplyOptions, CommandInteraction, ButtonInteraction, SelectMenuInteraction } from 'discord.js'
-import { BaseFactory, BaseHandler, HandlerContext } from '../..';
+import { InteractionReplyOptions, CommandInteraction, ButtonInteraction, SelectMenuInteraction } from 'discord.js'
+import { HandlerEmbed, BaseFactory, BaseHandler, HandlerContext } from '../..';
 
 export class ResponseFactory<H extends BaseHandler> extends BaseFactory<H> {
 
@@ -36,19 +36,5 @@ export class ResponseFactory<H extends BaseHandler> extends BaseFactory<H> {
         return new HandlerEmbed(context)
             .setDescription(`*Sorry! \`/${this.handler.id}\` commands can only be used in \`NSFW\` channels*`)
             .toReplyOptions(true);
-    }
-}
-
-export class HandlerEmbed extends MessageEmbed {
-
-    public readonly context: HandlerContext;
-
-    constructor(context: HandlerContext, data?: MessageEmbed | MessageEmbedOptions) {
-        super(data);
-        this.context = context;
-    }
-
-    public toReplyOptions(ephemeral?: boolean): InteractionReplyOptions {
-        return { embeds: [this], ephemeral: ephemeral ?? false }
     }
 }

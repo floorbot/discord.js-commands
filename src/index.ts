@@ -14,3 +14,4 @@ export * from './interactions/handlers/RegexHandler';
 export * from './interactions/factories/SelectMenuFactory';
 export * from './interactions/factories/ResponseFactory';
 export * from './interactions/factories/ButtonFactory';
+export * from './interactions/factories/EmbedFactory';
