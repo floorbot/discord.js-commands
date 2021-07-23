@@ -1,8 +1,9 @@
-import { Message, CommandInteraction, ButtonInteraction, SelectMenuInteraction, GuildMember, Permissions, Guild } from 'discord.js';
-import { CommandHandler, ButtonHandler, SelectMenuHandler, RegexHandler } from '..';
+import { CommandHandler, ButtonHandler, SelectMenuHandler, RegexHandler, ResponseFactory } from '..';
+import { Message, CommandInteraction, ButtonInteraction, SelectMenuInteraction } from 'discord.js';
 import { CommandClient } from '../discord/CommandClient';
 
 export interface HandlerOptions {
+    readonly nsfw: boolean;
     readonly id: string;
 }
 
@@ -14,25 +15,25 @@ export type HandlerContext = CommandInteraction | ButtonInteraction | SelectMenu
 
 export abstract class BaseHandler {
 
+    public abstract readonly responseFactory: ResponseFactory<this>;
+
+    public readonly nsfw: boolean;
     public readonly id: string;
 
+
     constructor(options: HandlerOptions) {
+        this.nsfw = options.nsfw;
         this.id = options.id;
     }
 
-    public abstract isEnabled(guild?: Guild): Promise<boolean>;
+    public abstract isEnabled(context: HandlerContext): Promise<boolean>;
 
-    public async initialise(_client: CommandClient): Promise<HandlerResult | null | any> { return null }
-    public async finalise(_client: CommandClient): Promise<HandlerResult | null | any> { return null }
-    public async setup(_client: CommandClient): Promise<HandlerResult | null | any> { return null }
+    public async initialise(_client: CommandClient): Promise<HandlerResult | any> { return null }
+    public async finalise(_client: CommandClient): Promise<HandlerResult | any> { return null }
+    public async setup(_client: CommandClient): Promise<HandlerResult | any> { return null }
 
     public isSelectMenuHandler(): this is SelectMenuHandler<HandlerCustomData> { return 'onSelectMenu' in this }
     public isButtonHandler(): this is ButtonHandler<HandlerCustomData> { return 'onButton' in this }
     public isCommandHandler(): this is CommandHandler { return 'onCommand' in this }
     public isRegexHandler(): this is RegexHandler { return 'onRegex' in this }
-
-    public isAdmin(context: HandlerContext) {
-        const { member } = <{ member: GuildMember }>context
-        return member && member.permissions.has(Permissions.FLAGS.ADMINISTRATOR);
-    }
 }

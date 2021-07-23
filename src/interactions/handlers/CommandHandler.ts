@@ -1,10 +1,10 @@
-import { CommandInteraction, ApplicationCommandData } from 'discord.js';
+import { CommandInteraction, ApplicationCommand, ApplicationCommandData, Guild } from 'discord.js';
 import { BaseHandler, HandlerResult } from '../..';
 
 export interface CommandHandler extends BaseHandler {
 
     readonly commandData: ApplicationCommandData;
-    readonly nsfw: boolean;
 
     onCommand(interaction: CommandInteraction): Promise<HandlerResult | null | any>;
+    fetchCommand(guild?: Guild): Promise<ApplicationCommand | null>;
 }
