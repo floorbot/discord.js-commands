@@ -86,7 +86,7 @@ export class CommandClient extends Client {
 
     private async onMessageCreate(message: Message): Promise<void> {
         for (const handler of this.handlers) {
-            if (!(await handler.isEnabled())) return;
+            if (!(await handler.isEnabled(message.guild || undefined))) return;
             if (handler.isRegexHandler()) {
                 const matches = handler.regex.exec(message.content);
                 if (matches && matches[1]) {
