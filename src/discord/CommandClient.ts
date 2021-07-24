@@ -22,13 +22,13 @@ export class CommandClient extends Client {
         if (interaction instanceof CommandInteraction) {
             const handler = this.handlers.find(handler => handler.isCommandHandler() && handler.id === interaction.commandName) as (CommandHandler | undefined)
             if (handler) {
-                if (!(await handler.isEnabled(interaction))) return interaction.reply(handler.responseFactory.getHandlerDisabledResponse(interaction));
-                if (channel instanceof TextChannel && !channel.nsfw && handler.nsfw) return interaction.reply(handler.responseFactory.getHandlerNSFWResponse(interaction));
+                if (!(await handler.isEnabled(interaction))) return interaction.reply(handler.getHandlerDisabledResponse(interaction));
+                if (channel instanceof TextChannel && !channel.nsfw && handler.nsfw) return interaction.reply(handler.getHandlerNSFWResponse(interaction));
                 return handler.onCommand(interaction).then(result => {
                     if (result) this.emit('log', `[${handler.id}](command){${Date.now() - interaction.createdTimestamp}ms} ${result.message || 'Completed'}`);
                 }).catch(error => {
                     this.emit('log', `[${handler.id}](command){${Date.now() - interaction.createdTimestamp}ms} Encountered an error`, error);
-                    return interaction.followUp(handler.responseFactory.getHandlerErrorResponse(interaction));
+                    return interaction.followUp(handler.getHandlerErrorResponse(interaction));
                 }).catch(console.error);
             }
         }
@@ -38,14 +38,14 @@ export class CommandClient extends Client {
             if (commandName && customDataString) {
                 const handler = this.handlers.find(handler => handler.isButtonHandler() && handler.id === commandName) as (ButtonHandler<HandlerCustomData> | undefined)
                 if (handler) {
-                    if (!(await handler.isEnabled(interaction))) return interaction.reply(handler.responseFactory.getHandlerDisabledResponse(interaction));
-                    if (channel instanceof TextChannel && !channel.nsfw && handler.nsfw) return interaction.reply(handler.responseFactory.getHandlerNSFWResponse(interaction));
+                    if (!(await handler.isEnabled(interaction))) return interaction.reply(handler.getHandlerDisabledResponse(interaction));
+                    if (channel instanceof TextChannel && !channel.nsfw && handler.nsfw) return interaction.reply(handler.getHandlerNSFWResponse(interaction));
                     const customData = handler.buttonFactory.decode(customDataString);
                     return handler.onButton(interaction, customData).then(result => {
                         if (result) this.emit('log', `[${handler.id}](button){${Date.now() - interaction.createdTimestamp}ms} ${result.message || 'Completed'}`);
                     }).catch(error => {
                         this.emit('log', `[${handler.id}](button){${Date.now() - interaction.createdTimestamp}ms} Encountered an error`, error);
-                        return interaction.followUp(handler.responseFactory.getHandlerErrorResponse(interaction));
+                        return interaction.followUp(handler.getHandlerErrorResponse(interaction));
                     }).catch(console.error);
                 }
             }
@@ -56,14 +56,14 @@ export class CommandClient extends Client {
             if (commandName && customDataString) {
                 const handler = this.handlers.find(handler => handler.isButtonHandler() && handler.id === commandName) as (SelectMenuHandler<HandlerCustomData> | undefined)
                 if (handler) {
-                    if (!(await handler.isEnabled(interaction))) return interaction.reply(handler.responseFactory.getHandlerDisabledResponse(interaction));
-                    if (channel instanceof TextChannel && !channel.nsfw && handler.nsfw) return interaction.reply(handler.responseFactory.getHandlerNSFWResponse(interaction));
+                    if (!(await handler.isEnabled(interaction))) return interaction.reply(handler.getHandlerDisabledResponse(interaction));
+                    if (channel instanceof TextChannel && !channel.nsfw && handler.nsfw) return interaction.reply(handler.getHandlerNSFWResponse(interaction));
                     const customData = handler.selectMenuFactory.decode(customDataString);
                     return handler.onSelectMenu(interaction, customData).then(result => {
                         if (result) this.emit('log', `[${handler.id}](selectmenu){${Date.now() - interaction.createdTimestamp}ms} ${result.message || 'Completed'}`);
                     }).catch(error => {
                         this.emit('log', `[${handler.id}](selectmenu){${Date.now() - interaction.createdTimestamp}ms} Encountered an error`, error);
-                        return interaction.followUp(handler.responseFactory.getHandlerErrorResponse(interaction));
+                        return interaction.followUp(handler.getHandlerErrorResponse(interaction));
                     }).catch(console.error);
                 }
             }
@@ -87,7 +87,7 @@ export class CommandClient extends Client {
                         if (result) this.emit('log', `[${handler.id}](regex){${Date.now() - message.createdTimestamp}ms} ${result.message}`);
                     }).catch(error => {
                         this.emit('log', `[${handler.id}](regex){${Date.now() - message.createdTimestamp}ms} Encountered an error`, error);
-                        return message.reply(handler.responseFactory.getHandlerErrorResponse(message));
+                        return message.reply(handler.getHandlerErrorResponse(message));
                     }).catch(console.error);
                 }
             }
