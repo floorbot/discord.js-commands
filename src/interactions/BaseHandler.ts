@@ -3,7 +3,7 @@ import { Message, CommandInteraction, ButtonInteraction, SelectMenuInteraction }
 import { CommandClient } from '../discord/CommandClient';
 
 export interface HandlerOptions {
-    readonly nsfw: boolean;
+    readonly nsfw?: boolean;
     readonly id: string;
 }
 
@@ -16,17 +16,16 @@ export type HandlerContext = CommandInteraction | ButtonInteraction | SelectMenu
 export abstract class BaseHandler {
 
     public abstract readonly responseFactory: ResponseFactory<BaseHandler>;
-
     public readonly nsfw: boolean;
     public readonly id: string;
 
-
     constructor(options: HandlerOptions) {
-        this.nsfw = options.nsfw;
+        this.nsfw = options.nsfw ?? false;
         this.id = options.id;
     }
 
-    public abstract isEnabled(context: HandlerContext): Promise<boolean>;
+    // unauthorized
+    public async isEnabled(_context: HandlerContext): Promise<boolean> { return true; }
 
     public async initialise(_client: CommandClient): Promise<HandlerResult | any> { return null }
     public async finalise(_client: CommandClient): Promise<HandlerResult | any> { return null }
