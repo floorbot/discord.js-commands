@@ -75,7 +75,7 @@ export class BaseHandler {
     public getHandlerErrorResponse(context: HandlerContext, _customData?: HandlerCustomData): InteractionReplyOptions {
         const type = this.getContextName(context);
         return new HandlerEmbed().setContextAuthor(context).setDescription([
-            `Sorry! I seem to have run into an issue with \`/${this.id} ${type}\``,
+            `Sorry! I seem to have run into an issue with your \`${this.id} ${type}\``,
             `*The error has been reported and will be fixed in the future!*`
         ].join('\n')).toReplyOptions(false);
     }
