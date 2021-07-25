@@ -3,14 +3,14 @@ import './discord/Util';
 export * from './discord/Util';
 export * from './discord/CommandClient';
 
-export * from './interactions/BaseHandler';
-export * from './interactions/BaseFactory';
+export * from './handlers/BaseHandler';
 
-export * from './interactions/handlers/SelectMenuHandler';
-export * from './interactions/handlers/ButtonHandler';
-export * from './interactions/handlers/CommandHandler';
-export * from './interactions/handlers/RegexHandler';
+export * from './handlers/interfaces/SelectMenuHandler';
+export * from './handlers/interfaces/ButtonHandler';
+export * from './handlers/interfaces/CommandHandler';
+export * from './handlers/interfaces/RegexHandler';
 
-export * from './interactions/factories/SelectMenuFactory';
-export * from './interactions/factories/ButtonFactory';
-export * from './interactions/factories/EmbedFactory';
+export * from './components/HandlerSelectMenu';
+export * from './components/HandlerAttachment';
+export * from './components/HandlerButton';
+export * from './components/HandlerEmbed';

@@ -1,9 +1,8 @@
-import { BaseHandler, HandlerResult, HandlerCustomData, SelectMenuFactory } from '../..';
+import { BaseHandler, HandlerResult, HandlerCustomData } from '../..';
 import { SelectMenuInteraction } from 'discord.js';
 
 export interface SelectMenuHandler<T extends HandlerCustomData> extends BaseHandler {
-
-    readonly selectMenuFactory: SelectMenuFactory<T, SelectMenuHandler<T>>
-
     onSelectMenu(interaction: SelectMenuInteraction, customData: T): Promise<HandlerResult | null | any>;
+    decodeSelectMenu(customString: string): T;
+    encodeSelectMenu(customData: T): string;
 }
