@@ -1,4 +1,4 @@
-import { Message, CommandInteraction, ButtonInteraction, SelectMenuInteraction, InteractionReplyOptions } from 'discord.js';
+import { Message, CommandInteraction, ButtonInteraction, SelectMenuInteraction, InteractionReplyOptions, Util } from 'discord.js';
 import { CommandHandler, ButtonHandler, SelectMenuHandler, RegexHandler, HandlerEmbed } from '..';
 import { CommandClient } from '../discord/CommandClient';
 
@@ -67,8 +67,8 @@ export class BaseHandler {
     public getUnauthorisedResponse(context: HandlerContext, missing: string[], _customData?: HandlerCustomData): InteractionReplyOptions {
         const type = this.getContextName(context);
         return new HandlerEmbed().setContextAuthor(context).setDescription([
-            `Sorry! It seems you are not allowed to use this specific \`${this.id} ${type}\``,
-            `*It appears you are missing \`${missing.join('\`, \`').replace(/, ([^,]*)$/, ' and \`$1')}\`*`
+            `Sorry! It seems you are not allowed to use that ${this.id} ${type}`,
+            `*It appears you are missing \`${missing.map(miss => Util.capitalizeString(miss)).join('\`, \`').replace(/, ([^,]*)$/, ' or \`$1')}\`*`
         ].join('\n')).toReplyOptions(false);
     }
 
