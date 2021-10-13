@@ -5,8 +5,7 @@ export * from './discord/CommandClient';
 
 export * from './handlers/BaseHandler';
 
-export * from './handlers/interfaces/SelectMenuHandler';
-export * from './handlers/interfaces/ButtonHandler';
+export * from './handlers/interfaces/ComponentHandler';
 export * from './handlers/interfaces/CommandHandler';
 export * from './handlers/interfaces/RegexHandler';
 

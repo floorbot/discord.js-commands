@@ -1,5 +1,5 @@
-import { Client, ClientOptions, Constants, CloseEvent, Message, Interaction, CommandInteraction, ButtonInteraction, SelectMenuInteraction, TextChannel } from 'discord.js';
-import { CommandHandler, ButtonHandler, SelectMenuHandler, BaseHandler, HandlerCustomData } from '..';
+import { Client, ClientOptions, Constants, CloseEvent, Message, Interaction, BaseCommandInteraction, MessageComponentInteraction, TextChannel } from 'discord.js';
+import { CommandHandler, ComponentHandler, BaseHandler, HandlerCustomData } from '..';
 import * as exitHook from 'async-exit-hook';
 const { Events } = Constants;
 
@@ -19,60 +19,31 @@ export class CommandClient extends Client {
     private async onInteractionCreate(interaction: Interaction): Promise<any> {
         const { channel } = interaction;
 
-        if (interaction instanceof CommandInteraction) {
-            const handler = this.handlers.find(handler => handler.isCommandHandler() && handler.id === interaction.commandName) as (CommandHandler | undefined);
+        if (interaction instanceof BaseCommandInteraction) {
+            const handler = this.handlers.find(handler => handler.isBaseCommandHandler() && handler.id === interaction.commandName) as (CommandHandler | undefined);
             if (handler) {
-                const missing = await handler.isAuthorised(interaction);
-                if (missing.length) return interaction.reply(handler.getUnauthorisedResponse(interaction, missing));
-                if (!(await handler.isEnabled(interaction))) return interaction.reply(handler.getHandlerDisabledResponse(interaction));
-                if (!(await handler.isWhitelisted(interaction))) return interaction.reply(handler.getWhitelistedResponse(interaction));
-                if (channel instanceof TextChannel && !channel.nsfw && handler.nsfw) return interaction.reply(handler.getHandlerNSFWResponse(interaction));
+                if (channel instanceof TextChannel && !channel.nsfw && handler.nsfw) return handler.onNSFW(interaction);
                 return handler.onCommand(interaction).then(result => {
                     if (result) this.emit('log', `[${handler.id}](command){${Date.now() - interaction.createdTimestamp}ms} ${result.message || 'Completed'}`);
                 }).catch(error => {
                     this.emit('log', `[${handler.id}](command){${Date.now() - interaction.createdTimestamp}ms} Encountered an error`, error);
-                    return interaction.followUp(handler.getHandlerErrorResponse(interaction));
+                    return handler.onError(interaction);
                 }).catch(console.error);
             }
         }
 
-        if (interaction instanceof ButtonInteraction) {
+        if (interaction instanceof MessageComponentInteraction) {
             const [commandName, customDataString] = interaction.customId.split(/-(.+)/);
             if (commandName && customDataString) {
-                const handler = this.handlers.find(handler => handler.isButtonHandler() && handler.id === commandName) as (ButtonHandler<HandlerCustomData> | undefined);
+                const handler = this.handlers.find(handler => handler.isComponentHandler() && handler.id === commandName) as (ComponentHandler<HandlerCustomData> | undefined);
                 if (handler) {
-                    const customData = handler.decodeButton(customDataString);
-                    const missing = await handler.isAuthorised(interaction);
-                    if (missing.length) return interaction.reply(handler.getUnauthorisedResponse(interaction, missing, customData));
-                    if (!(await handler.isEnabled(interaction, customData))) return interaction.reply(handler.getHandlerDisabledResponse(interaction, customData));
-                    if (!(await handler.isWhitelisted(interaction, customData))) return interaction.reply(handler.getWhitelistedResponse(interaction, customData));
-                    if (channel instanceof TextChannel && !channel.nsfw && handler.nsfw) return interaction.reply(handler.getHandlerNSFWResponse(interaction, customData));
-                    return handler.onButton(interaction, customData).then(result => {
+                    const customData = handler.decodeComponent(customDataString);
+                    if (channel instanceof TextChannel && !channel.nsfw && handler.nsfw) return handler.onNSFW(interaction, customData);
+                    return handler.onComponent(interaction, customData).then(result => {
                         if (result) this.emit('log', `[${handler.id}](button){${Date.now() - interaction.createdTimestamp}ms} ${result.message || 'Completed'}`);
                     }).catch(error => {
                         this.emit('log', `[${handler.id}](button){${Date.now() - interaction.createdTimestamp}ms} Encountered an error`, error);
-                        return interaction.followUp(handler.getHandlerErrorResponse(interaction, customData));
-                    }).catch(console.error);
-                }
-            }
-        }
-
-        if (interaction instanceof SelectMenuInteraction) {
-            const [commandName, customDataString] = interaction.customId.split(/-(.+)/);
-            if (commandName && customDataString) {
-                const handler = this.handlers.find(handler => handler.isButtonHandler() && handler.id === commandName) as (SelectMenuHandler<HandlerCustomData> | undefined);
-                if (handler) {
-                    const customData = handler.decodeSelectMenu(customDataString);
-                    const missing = await handler.isAuthorised(interaction);
-                    if (missing.length) return interaction.reply(handler.getUnauthorisedResponse(interaction, missing, customData));
-                    if (!(await handler.isEnabled(interaction, customData))) return interaction.reply(handler.getHandlerDisabledResponse(interaction, customData));
-                    if (!(await handler.isWhitelisted(interaction, customData))) return interaction.reply(handler.getWhitelistedResponse(interaction, customData));
-                    if (channel instanceof TextChannel && !channel.nsfw && handler.nsfw) return interaction.reply(handler.getHandlerNSFWResponse(interaction, customData));
-                    return handler.onSelectMenu(interaction, customData).then(result => {
-                        if (result) this.emit('log', `[${handler.id}](selectmenu){${Date.now() - interaction.createdTimestamp}ms} ${result.message || 'Completed'}`);
-                    }).catch(error => {
-                        this.emit('log', `[${handler.id}](selectmenu){${Date.now() - interaction.createdTimestamp}ms} Encountered an error`, error);
-                        return interaction.followUp(handler.getHandlerErrorResponse(interaction, customData));
+                        return handler.onError(interaction, customData);
                     }).catch(console.error);
                 }
             }
@@ -82,9 +53,6 @@ export class CommandClient extends Client {
     private async onMessageCreate(message: Message): Promise<void> {
         const { channel } = message;
         for (const handler of this.handlers) {
-            if (!(await handler.isEnabled(message))) return;
-            if (!(await handler.isWhitelisted(message))) return;
-            if (!(await handler.isAuthorised(message)).length) return;
             if (channel instanceof TextChannel && !channel.nsfw && handler.nsfw) return;
             if (handler.isRegexHandler()) {
                 const matches = handler.regex.exec(message.content);
@@ -98,7 +66,7 @@ export class CommandClient extends Client {
                         if (result) this.emit('log', `[${handler.id}](regex){${Date.now() - message.createdTimestamp}ms} ${result.message}`);
                     }).catch(error => {
                         this.emit('log', `[${handler.id}](regex){${Date.now() - message.createdTimestamp}ms} Encountered an error`, error);
-                        return message.reply(handler.getHandlerErrorResponse(message));
+                        return handler.onError(message);
                     }).catch(console.error);
                 }
             }

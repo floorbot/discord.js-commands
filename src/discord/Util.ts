@@ -1,3 +1,4 @@
+import { CommandInteraction, ContextMenuInteraction, BaseCommandInteraction, ButtonInteraction, SelectMenuInteraction, MessageComponentInteraction, Interaction } from 'discord.js'
 import { Util, Collection, User, Guild, GuildMember, TextChannel, DMChannel, Role, Message, GuildChannel, Channel, Client } from 'discord.js';
 import { HandlerContext } from '..';
 import * as twemoji from 'twemoji';
@@ -9,6 +10,7 @@ declare module 'discord.js' {
         export function resolveRole(context: HandlerContext, string: string): Role | null;
         export function resolveUser(context: HandlerContext, string: string, allowBot?: boolean): User | null;
         export function resolveMember(context: HandlerContext, string: string, allowBot?: boolean): GuildMember | null;
+        export function resolveContextName(context: HandlerContext): string;
         export function localeToEmoji(countryCode: string): string | null;
         export function getRandomUser(channel: TextChannel, bot?: boolean): GuildMember;
         export function getRandomRole(guild: Guild): Role;
@@ -84,6 +86,20 @@ Util.resolveMember = function(context: HandlerContext, string: string, allowBot:
         }) || null;
     }
     return null;
+}
+
+Util.resolveContextName = function(context: HandlerContext): string {
+    switch (true) {
+        case context instanceof CommandInteraction: return 'slash command';
+        case context instanceof ContextMenuInteraction: return 'context menu';
+        case context instanceof BaseCommandInteraction: return 'command';
+        case context instanceof ButtonInteraction: return 'button';
+        case context instanceof SelectMenuInteraction: return 'select menu';
+        case context instanceof MessageComponentInteraction: return 'component';
+        case context instanceof Interaction: return 'interaction';
+        case context instanceof Message: return 'regex';
+        default: throw context;
+    }
 }
 
 Util.localeToEmoji = function(countryCode: string): string | null {
